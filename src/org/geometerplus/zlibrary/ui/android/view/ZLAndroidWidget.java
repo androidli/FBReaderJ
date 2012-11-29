@@ -26,14 +26,11 @@ import org.geometerplus.fbreader.library.Library;
 import org.geometerplus.zlibrary.core.application.ZLApplication;
 import org.geometerplus.zlibrary.core.view.ZLView;
 import org.geometerplus.zlibrary.core.view.ZLViewWidget;
-import org.geometerplus.zlibrary.ui.android.R;
 import org.geometerplus.zlibrary.ui.android.library.ZLAndroidActivity;
 import org.geometerplus.zlibrary.ui.android.library.ZLAndroidLibrary;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
@@ -45,6 +42,7 @@ import android.view.ViewConfiguration;
 
 import com.onyx.android.sdk.device.EpdController;
 import com.onyx.android.sdk.device.EpdController.UpdateMode;
+import com.onyx.android.sdk.ui.util.BookmarkIcon;
 
 public class ZLAndroidWidget extends View implements ZLViewWidget, View.OnLongClickListener {
     private final static String TAG = "ZLAndroidWidget";
@@ -270,26 +268,24 @@ public class ZLAndroidWidget extends View implements ZLViewWidget, View.OnLongCl
 		canvas.drawBitmap(myFooterBitmap, 0, getHeight() - footer.getHeight(), myPaint);
 	}
 
-	private final int mBookmarkY = 10;
+	private final int mBookmarkY = 0;
 	private int mBookmarkX = 0;
-	private final int mMargins = 10;
 	private void drawBookmarkIcon(Canvas canvas) {
-	    Resources res = getResources();
 	    final FBReaderApp fbreader = (FBReaderApp)FBReaderApp.Instance();
 	    if (fbreader != null && fbreader.Model != null) {
 	        final Bookmark bookmarkAdd = fbreader.addBookmark(20, true);
-	        mBookmarkBitmap = BitmapFactory.decodeResource(res, R.drawable.star_cancel);
-	        mBookmarkX = ZLAndroidWidget.this.getWidth() - mBookmarkBitmap.getWidth() - mMargins;
+	        mBookmarkBitmap = BookmarkIcon.drawTriangle(false);
+	        mBookmarkX = ZLAndroidWidget.this.getWidth() - mBookmarkBitmap.getWidth();
 	        if (bookmarkAdd != null) {
 	            for (Bookmark bookmark : Library.Instance().allBookmarks()) {
 	                if (bookmark.getText().equals(bookmarkAdd.getText())) {
-	                    mBookmarkBitmap = BitmapFactory.decodeResource(res, R.drawable.star);
+	                    mBookmarkBitmap = BookmarkIcon.drawTriangle(true);
 	                    break;
 	                }
 	            }
 	        }
 	        Paint paint = new Paint();
-	        paint.setAlpha(100);
+	        paint.setAlpha(220);
 	        canvas.drawBitmap(mBookmarkBitmap, mBookmarkX, mBookmarkY, paint);
 	    }
 	}
