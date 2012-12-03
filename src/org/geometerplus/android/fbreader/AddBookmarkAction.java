@@ -5,6 +5,7 @@ package org.geometerplus.android.fbreader;
 
 import org.geometerplus.fbreader.fbreader.FBReaderApp;
 import org.geometerplus.fbreader.library.Bookmark;
+import org.geometerplus.fbreader.library.Library;
 
 /**
  * @author dxwts
@@ -27,6 +28,7 @@ public class AddBookmarkAction extends FBAndroidAction
     {
         final FBReaderApp fbreader = (FBReaderApp)FBReaderApp.Instance();
         final Bookmark bookmark = fbreader.addBookmark(20, true);
+        Library.Instance().allBookmarks().add(bookmark);
         bookmark.save();
     }
 

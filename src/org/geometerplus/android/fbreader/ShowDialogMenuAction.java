@@ -52,7 +52,7 @@ public class ShowDialogMenuAction extends FBAndroidAction
     private ArrayList<String> mFonts = null;
     private ZLTextBaseStyle mBaseStyle = null;
     
-    private DialogReaderMenu mDialogReaderMenu;
+    private static DialogReaderMenu sDialogReaderMenu;
     private FBReader mFbReader = null;
     
     ShowDialogMenuAction(FBReader baseActivity, FBReaderApp fbreader)
@@ -148,7 +148,7 @@ public class ShowDialogMenuAction extends FBAndroidAction
                 for (int i = 0; i < mFonts.size(); i++) {
                     fontfoces[i] = mFonts.get(i);
                 }
-                DialogFontFaceSettings dlg = new DialogFontFaceSettings(BaseActivity, fontfoces, optionValue, mDialogReaderMenu);
+                DialogFontFaceSettings dlg = new DialogFontFaceSettings(BaseActivity, fontfoces, optionValue, sDialogReaderMenu);
                 dlg.show();
                 dlg.setOnSettingsFontFaceListener(new onSettingsFontFaceListener()
                 {
@@ -157,7 +157,7 @@ public class ShowDialogMenuAction extends FBAndroidAction
                     public void settingfontFace(int location)
                     {
                         mBaseStyle.FontFamilyOption.setValue(mFonts.get(location));
-                        mDialogReaderMenu.setButtonFontFaceText(mFonts.get(location));
+                        sDialogReaderMenu.setButtonFontFaceText(mFonts.get(location));
                         Reader.clearTextCaches();
                         Reader.getViewWidget().repaint();
                     }
@@ -186,14 +186,12 @@ public class ShowDialogMenuAction extends FBAndroidAction
             public void previousPage()
             {
                 ZLApplication.Instance().runAction(ActionCode.TURN_PAGE_BACK);
-                updatePage();
             }
             
             @Override
             public void nextPage()
             {
                 ZLApplication.Instance().runAction(ActionCode.TURN_PAGE_FORWARD);
-                updatePage();
             }
             
             @Override
@@ -218,15 +216,19 @@ public class ShowDialogMenuAction extends FBAndroidAction
             @Override
             public int getPageIndex()
             {
-                // TODO Auto-generated method stub
-                return 0;
+                ZLApplication ZLApp = ZLApplication.Instance();
+                FBView view = (FBView) ZLApp.getCurrentView();
+                final PagePosition pos = view.pagePosition();
+                return pos.Current;
             }
             
             @Override
             public int getPageCount()
             {
-                // TODO Auto-generated method stub
-                return 0;
+                ZLApplication ZLApp = ZLApplication.Instance();
+                FBView view = (FBView) ZLApp.getCurrentView();
+                final PagePosition pos = view.pagePosition();
+                return pos.Total;
             }
             
             @Override
@@ -245,19 +247,19 @@ public class ShowDialogMenuAction extends FBAndroidAction
             public void changeRotationScreen(RotationScreenProperty property)
             {
                 if (property == RotationScreenProperty.rotation_0) {
-                    mDialogReaderMenu.dismiss();
+                    sDialogReaderMenu.dismiss();
                     ZLApplication.Instance().runAction(ActionCode.SET_SCREEN_ORIENTATION_PORTRAIT);
                 }
                 else if (property == RotationScreenProperty.rotation_90) {
-                    mDialogReaderMenu.dismiss();
+                    sDialogReaderMenu.dismiss();
                     ZLApplication.Instance().runAction(ActionCode.SET_SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
                 }
                 else if (property == RotationScreenProperty.rotation_180) {
-                    mDialogReaderMenu.dismiss();
+                    sDialogReaderMenu.dismiss();
                     ZLApplication.Instance().runAction(ActionCode.SET_SCREEN_ORIENTATION_REVERSE_PORTRAIT);
                 }
                 else if (property == RotationScreenProperty.rotation_270) {
-                    mDialogReaderMenu.dismiss();
+                    sDialogReaderMenu.dismiss();
                     ZLApplication.Instance().runAction(ActionCode.SET_SCREEN_ORIENTATION_LANDSCAPE);
                 }
             }
@@ -279,7 +281,7 @@ public class ShowDialogMenuAction extends FBAndroidAction
             @Override
             public void showGoToPageDialog()
             {
-                final DialogGotoPage dialogGotoPage = new DialogGotoPage(BaseActivity, mDialogReaderMenu);
+                final DialogGotoPage dialogGotoPage = new DialogGotoPage(BaseActivity, sDialogReaderMenu);
                 dialogGotoPage.setAcceptNumberListener(new AcceptNumberListener()
                 {
 
@@ -296,7 +298,7 @@ public class ShowDialogMenuAction extends FBAndroidAction
                         ZLApplication.Instance().getCurrentView().Application.getViewWidget().repaint();
 
                         dialogGotoPage.dismiss();
-                        mDialogReaderMenu.dismiss();
+                        sDialogReaderMenu.dismiss();
                     }
                 });
                 dialogGotoPage.show();
@@ -369,7 +371,7 @@ public class ShowDialogMenuAction extends FBAndroidAction
             {
                 final ZLAndroidLibrary zlibrary = (ZLAndroidLibrary)ZLAndroidLibrary.Instance();
                 zlibrary.ShowStatusBarOption.setValue(!zlibrary.ShowStatusBarOption.getValue());
-                mDialogReaderMenu.dismiss();
+                sDialogReaderMenu.dismiss();
 
                 WindowManager.LayoutParams params = mFbReader.getWindow().getAttributes();
                 if (zlibrary.ShowStatusBarOption.getValue()) {
@@ -411,19 +413,17 @@ public class ShowDialogMenuAction extends FBAndroidAction
             }
         };
 
-        mDialogReaderMenu = new DialogReaderMenu(BaseActivity, menu_handler);
-        mDialogReaderMenu.setCanceledOnTouchOutside(true);
-        updatePage();
-        mDialogReaderMenu.show();
+        sDialogReaderMenu = new DialogReaderMenu(BaseActivity, menu_handler);
+        sDialogReaderMenu.setCanceledOnTouchOutside(true);
+        sDialogReaderMenu.show();
 
     }
-    
-    private void updatePage() {
-        ZLApplication ZLApp = ZLApplication.Instance();
-        FBView view = (FBView) ZLApp.getCurrentView();
-        final PagePosition pagePosition = view.pagePosition();
-        mDialogReaderMenu.setPageIndex(pagePosition.Current);
-        mDialogReaderMenu.setPageCount(pagePosition.Total);
+
+    public static void updatePage(int current, int total) {
+        if (sDialogReaderMenu != null) {
+            sDialogReaderMenu.setPageIndex(current);
+            sDialogReaderMenu.setPageCount(total);
+        }
     }
 
     private void showDirectoryDialog(DirectoryTab tab)
@@ -482,7 +482,7 @@ public class ShowDialogMenuAction extends FBAndroidAction
                     if (book != null) {
                         fbreader.openBook(book, bookmark, null);
                     } else {
-                        UIUtil.showErrorMessage(mDialogReaderMenu.getContext(), "cannotOpenBook");
+                        UIUtil.showErrorMessage(sDialogReaderMenu.getContext(), "cannotOpenBook");
                     }
                 } else {
                     fbreader.gotoBookmark(bookmark);
