@@ -420,7 +420,7 @@ public class ShowDialogMenuAction extends FBAndroidAction
     }
 
     public static void updatePage(int current, int total) {
-        if (sDialogReaderMenu != null && sDialogReaderMenu.isShowing()) {
+        if (sDialogReaderMenu != null) {
             sDialogReaderMenu.setPageIndex(current);
             sDialogReaderMenu.setPageCount(total);
         }
