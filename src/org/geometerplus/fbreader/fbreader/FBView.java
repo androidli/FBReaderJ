@@ -19,20 +19,25 @@
 
 package org.geometerplus.fbreader.fbreader;
 
-import java.util.*;
+import java.util.ArrayList;
 
-import org.geometerplus.zlibrary.core.util.ZLColor;
-import org.geometerplus.zlibrary.core.library.ZLibrary;
-import org.geometerplus.zlibrary.core.view.ZLPaintContext;
-import org.geometerplus.zlibrary.core.filesystem.ZLFile;
-import org.geometerplus.zlibrary.core.filesystem.ZLResourceFile;
-
-import org.geometerplus.zlibrary.text.model.ZLTextModel;
-import org.geometerplus.zlibrary.text.view.*;
-
+import org.geometerplus.android.fbreader.ShowDialogMenuAction;
 import org.geometerplus.fbreader.bookmodel.BookModel;
 import org.geometerplus.fbreader.bookmodel.FBHyperlinkType;
 import org.geometerplus.fbreader.bookmodel.TOCTree;
+import org.geometerplus.zlibrary.core.filesystem.ZLFile;
+import org.geometerplus.zlibrary.core.filesystem.ZLResourceFile;
+import org.geometerplus.zlibrary.core.library.ZLibrary;
+import org.geometerplus.zlibrary.core.util.ZLColor;
+import org.geometerplus.zlibrary.core.view.ZLPaintContext;
+import org.geometerplus.zlibrary.text.model.ZLTextModel;
+import org.geometerplus.zlibrary.text.view.ZLTextHyperlink;
+import org.geometerplus.zlibrary.text.view.ZLTextHyperlinkRegionSoul;
+import org.geometerplus.zlibrary.text.view.ZLTextImageRegionSoul;
+import org.geometerplus.zlibrary.text.view.ZLTextRegion;
+import org.geometerplus.zlibrary.text.view.ZLTextSelectionCursor;
+import org.geometerplus.zlibrary.text.view.ZLTextView;
+import org.geometerplus.zlibrary.text.view.ZLTextWordRegionSoul;
 
 
 public final class FBView extends ZLTextView {
@@ -496,6 +501,7 @@ public final class FBView extends ZLTextView {
 				info.append(pagePosition.Current);
 				info.append("/");
 				info.append(pagePosition.Total);
+				ShowDialogMenuAction.updatePage(pagePosition.Current, pagePosition.Total);
 			}
 			if (reader.FooterShowBatteryOption.getValue()) {
 				if (info.length() > 0) {
