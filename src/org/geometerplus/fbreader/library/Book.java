@@ -426,141 +426,124 @@ public class Book {
 	}
 
 	public boolean save() {
-		if (myIsSaved) {
-			return false;
-		}
-		final BooksDatabase database = BooksDatabase.Instance();
-		database.executeAsATransaction(new Runnable() {
-			public void run() {
-				if (myId >= 0) {
-					final FileInfoSet fileInfos = new FileInfoSet(File);
-					database.updateBookInfo(myId, fileInfos.getId(File), myEncoding, myLanguage, myTitle);
-				} else {
-					myId = database.insertBookInfo(File, myEncoding, myLanguage, myTitle);
-					storeAllVisitedHyperinks();
-				}
+	    if (myIsSaved) {
+	        return false;
+	    }
+	    final BooksDatabase database = BooksDatabase.Instance();
+	    database.executeAsATransaction(new Runnable() {
+	        public void run() {
+	            if (myId >= 0) {
+	                final FileInfoSet fileInfos = new FileInfoSet(File);
+	                database.updateBookInfo(myId, fileInfos.getId(File), myEncoding, myLanguage, myTitle);
+	            } else {
+	                myId = database.insertBookInfo(File, myEncoding, myLanguage, myTitle);
+	                storeAllVisitedHyperinks();
+	            }
 
-				long index = 0;
-				database.deleteAllBookAuthors(myId);
-				for (Author author : authors()) {
-					database.saveBookAuthorInfo(myId, index++, author);
-				}
-				database.deleteAllBookTags(myId);
-				for (Tag tag : tags()) {
-					database.saveBookTagInfo(myId, tag);
-				}
-				database.saveBookSeriesInfo(myId, mySeriesInfo);
-			}
-		});
-		
-		try {
-		    OnyxMetadata data = new OnyxMetadata();
-		    java.io.File file = new java.io.File(File.getPath());
-		    
-            long time_point = System.currentTimeMillis();
-            String md5 = FileUtil.computeMD5(file);
-            long time_md5 = System.currentTimeMillis() - time_point;
-            Log.d(TAG, "times md5: " + time_md5);
+	            long index = 0;
+	            database.deleteAllBookAuthors(myId);
+	            for (Author author : authors()) {
+	                database.saveBookAuthorInfo(myId, index++, author);
+	            }
+	            database.deleteAllBookTags(myId);
+	            for (Tag tag : tags()) {
+	                database.saveBookTagInfo(myId, tag);
+	            }
+	            database.saveBookSeriesInfo(myId, mySeriesInfo);
+	        }
+	    });
 
-            data.setMD5(md5);
-            data.setName(file.getName());
-            data.setLocation(file.getAbsolutePath());
-            data.setNativeAbsolutePath(file.getAbsolutePath());
-            data.setSize(file.length());
-            data.setlastModified(new Date(file.lastModified()));
-            
-            Context ctx = ((ZLAndroidLibrary)ZLAndroidLibrary.Instance()).getActivity();
-            if (OnyxCmsCenter.getMetadata(ctx, data)) {
-                data.setTitle(myTitle);
-                ArrayList<String> authors = new ArrayList<String>();
-                if (myAuthors != null) {
-                    for (Author a : myAuthors) {
-                        authors.add(a.DisplayName);
-                    }
-                }
-                data.setAuthors(authors);
-                data.setLanguage(myLanguage);
-                data.setEncoding(myEncoding);
-                ArrayList<String> tags = new ArrayList<String>();
-                if (myTags != null) {
-                    for (Tag t : myTags) {
-                        tags.add(t.Name);
-                    }
-                    data.setTags(tags);
-                }
-                
-                OnyxCmsCenter.updateMetadata(ctx, data);
-            }
-            else {
-                data.setTitle(myTitle);
-                ArrayList<String> authors = new ArrayList<String>();
-                if (myAuthors != null) {
-                    for (Author a : myAuthors) {
-                        authors.add(a.DisplayName);
-                    }
-                }
-                data.setAuthors(authors);
-                data.setLanguage(myLanguage);
-                data.setEncoding(myEncoding);
-                ArrayList<String> tags = new ArrayList<String>();
-                if (myTags != null) {
-                    for (Tag t : myTags) {
-                        tags.add(t.Name);
-                    }
-                    data.setTags(tags);
-                }
-                
-                OnyxCmsCenter.insertMetadata(ctx, data);
-            }
-            
-            Log.d(TAG, "check cover");
-            ZLImage image = this.getCover();
-            if (image != null) {
-                Log.d(TAG, "cover is not null");
-                RefValue<Bitmap> result = new RefValue<Bitmap>();
-                if (!OnyxCmsCenter.getThumbnail(ctx, data, result)) {
-                    if (image instanceof ZLLoadableImage) {
-                        final ZLLoadableImage loadableImage = (ZLLoadableImage)image;
-                        if (!loadableImage.isSynchronized()) {
-                            loadableImage.synchronize();
-                        }
-                    }
-                    
-                    final ZLAndroidImageData image_data =
-                            ((ZLAndroidImageManager)ZLAndroidImageManager.Instance()).getImageData(image);
-                    if (image_data != null) {
-                        Log.d(TAG, "image data not null, begin insert thumbnail");
-                        final DisplayMetrics metrics = new DisplayMetrics();
-                        Activity a = ((ZLAndroidLibrary)ZLAndroidLibrary.Instance()).getActivity();
-                        a.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+	    OnyxMetadata data = OnyxMetadata.createFromFile(File.getPath(), true);
+	    if (data != null) {
+	        String md5 = data.getMD5();
+	        
+	        Context ctx = ((ZLAndroidLibrary)ZLAndroidLibrary.Instance()).getActivity();
+	        if (OnyxCmsCenter.getMetadata(ctx, data)) {
+	            data.setTitle(myTitle);
+	            ArrayList<String> authors = new ArrayList<String>();
+	            if (myAuthors != null) {
+	                for (Author a : myAuthors) {
+	                    authors.add(a.DisplayName);
+	                }
+	            }
+	            data.setAuthors(authors);
+	            data.setLanguage(myLanguage);
+	            data.setEncoding(myEncoding);
+	            ArrayList<String> tags = new ArrayList<String>();
+	            if (myTags != null) {
+	                for (Tag t : myTags) {
+	                    tags.add(t.Name);
+	                }
+	                data.setTags(tags);
+	            }
+	            if (data.getMD5() == null || !data.getMD5().equals(md5)) {
+	                data.setMD5(md5);
+	            }
 
-                        final int maxHeight = metrics.heightPixels * 2 / 3;
-                        final int maxWidth = maxHeight * 2 / 3;
-                        final Bitmap cover = image_data.getBitmap(2 * maxWidth, 2 * maxHeight);
-                        if (cover != null) {
-                            Log.d(TAG, "cover bitmap is not null"); 
-                            if (!OnyxCmsCenter.insertThumbnail(ctx, data, cover)) {
-                                Log.d(TAG, "insert thumbnail failed");
-                            }
-                            else {
-                                Log.d(TAG, "insert thumbnail successfully");
-                            }
-                        }
-                        else {
-                            Log.d(TAG, "cover bitmap is null"); 
-                        }
-                    }
-                }
-            }
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            Log.w(TAG, "exception caught: ", e);
-            return false;
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.w(TAG, "exception caught: ", e);
-            return false;
-        } 
+	            OnyxCmsCenter.updateMetadata(ctx, data);
+	        }
+	        else {
+	            data.setTitle(myTitle);
+	            ArrayList<String> authors = new ArrayList<String>();
+	            if (myAuthors != null) {
+	                for (Author a : myAuthors) {
+	                    authors.add(a.DisplayName);
+	                }
+	            }
+	            data.setAuthors(authors);
+	            data.setLanguage(myLanguage);
+	            data.setEncoding(myEncoding);
+	            ArrayList<String> tags = new ArrayList<String>();
+	            if (myTags != null) {
+	                for (Tag t : myTags) {
+	                    tags.add(t.Name);
+	                }
+	                data.setTags(tags);
+	            }
+
+	            OnyxCmsCenter.insertMetadata(ctx, data);
+	        }
+
+	        Log.d(TAG, "check cover");
+	        ZLImage image = this.getCover();
+	        if (image != null) {
+	            Log.d(TAG, "cover is not null");
+	            RefValue<Bitmap> result = new RefValue<Bitmap>();
+	            if (!OnyxCmsCenter.getThumbnail(ctx, data, result)) {
+	                if (image instanceof ZLLoadableImage) {
+	                    final ZLLoadableImage loadableImage = (ZLLoadableImage)image;
+	                    if (!loadableImage.isSynchronized()) {
+	                        loadableImage.synchronize();
+	                    }
+	                }
+
+	                final ZLAndroidImageData image_data =
+	                        ((ZLAndroidImageManager)ZLAndroidImageManager.Instance()).getImageData(image);
+	                if (image_data != null) {
+	                    Log.d(TAG, "image data not null, begin insert thumbnail");
+	                    final DisplayMetrics metrics = new DisplayMetrics();
+	                    Activity a = ((ZLAndroidLibrary)ZLAndroidLibrary.Instance()).getActivity();
+	                    a.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+	                    final int maxHeight = metrics.heightPixels * 2 / 3;
+	                    final int maxWidth = maxHeight * 2 / 3;
+	                    final Bitmap cover = image_data.getBitmap(2 * maxWidth, 2 * maxHeight);
+	                    if (cover != null) {
+	                        Log.d(TAG, "cover bitmap is not null"); 
+	                        if (!OnyxCmsCenter.insertThumbnail(ctx, data, cover)) {
+	                            Log.d(TAG, "insert thumbnail failed");
+	                        }
+	                        else {
+	                            Log.d(TAG, "insert thumbnail successfully");
+	                        }
+	                    }
+	                    else {
+	                        Log.d(TAG, "cover bitmap is null"); 
+	                    }
+	                }
+	            }
+	        }
+	    }
 
 		myIsSaved = true;
 		return true;
