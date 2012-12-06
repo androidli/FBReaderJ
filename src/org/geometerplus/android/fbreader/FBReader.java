@@ -407,22 +407,23 @@ public final class FBReader extends ZLAndroidActivity {
 
 	private SelectionPopupMenu mSelectionPopupMenu = null;
 	public void showSelectionPanel() {
-		if (mSelectionPopupMenu == null) {
-		    final FBReaderApp fbReader = (FBReaderApp)FBReaderApp.Instance();
-		    final ZLTextView view = fbReader.getTextView();
-		    final RelativeLayout root = (RelativeLayout)findViewById(R.id.root_view);
-		    SelectionPopupMenuHandler handler = new SelectionPopupMenuHandler();
-		    mSelectionPopupMenu = new SelectionPopupMenu(FBReader.this, handler, root);
-		    mSelectionPopupMenu.move(view.getSelectionStartY(), view.getSelectionEndY());
-		    mSelectionPopupMenu.show();
-        }
-		else if (!mSelectionPopupMenu.isShow()) {
-            mSelectionPopupMenu.show();
-        }
+	    final FBReaderApp fbReader = (FBReaderApp)FBReaderApp.Instance();
+	    final ZLTextView view = fbReader.getTextView();
+	    if (mSelectionPopupMenu == null) {
+	        final RelativeLayout root = (RelativeLayout)findViewById(R.id.root_view);
+	        SelectionPopupMenuHandler handler = new SelectionPopupMenuHandler();
+	        mSelectionPopupMenu = new SelectionPopupMenu(FBReader.this, handler, root);
+	        mSelectionPopupMenu.move(view.getSelectionStartY(), view.getSelectionEndY());
+	        mSelectionPopupMenu.show();
+	    }
+	    else if (!mSelectionPopupMenu.isShow()) {
+	        mSelectionPopupMenu.move(view.getSelectionStartY(), view.getSelectionEndY());
+	        mSelectionPopupMenu.show();
+	    }
 
-//		((SelectionPopup)fbReader.getPopupById(SelectionPopup.ID))
-//			.move(view.getSelectionStartY(), view.getSelectionEndY());
-//		fbReader.showPopup(SelectionPopup.ID);
+//	    ((SelectionPopup)fbReader.getPopupById(SelectionPopup.ID))
+//	        .move(view.getSelectionStartY(), view.getSelectionEndY());
+//	    fbReader.showPopup(SelectionPopup.ID);
 	}
 
 	public void hideSelectionPanel() {
