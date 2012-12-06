@@ -411,7 +411,7 @@ public final class FBReader extends ZLAndroidActivity {
 		    final FBReaderApp fbReader = (FBReaderApp)FBReaderApp.Instance();
 		    final ZLTextView view = fbReader.getTextView();
 		    final RelativeLayout root = (RelativeLayout)findViewById(R.id.root_view);
-		    SelectionPopupMenuHandler handler = new SelectionPopupMenuHandler(FBReader.this);
+		    SelectionPopupMenuHandler handler = new SelectionPopupMenuHandler();
 		    mSelectionPopupMenu = new SelectionPopupMenu(FBReader.this, handler, root);
 		    mSelectionPopupMenu.move(view.getSelectionStartY(), view.getSelectionEndY());
 		    mSelectionPopupMenu.show();

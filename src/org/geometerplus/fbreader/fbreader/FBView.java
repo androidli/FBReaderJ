@@ -605,6 +605,15 @@ public final class FBView extends ZLTextView {
 		}
 	}
 
+	@Override
+	public void clearSelection()
+	{
+	    super.clearSelection();
+	    if (getCountOfSelectedWords() <= 0) {
+	        myReader.runAction(ActionCode.SELECTION_HIDE_PANEL);
+	    }
+	}
+
 	public String getSelectedText() {
 		final TextBuildTraverser traverser = new TextBuildTraverser(this);
 		if (!isSelectionEmpty()) {
