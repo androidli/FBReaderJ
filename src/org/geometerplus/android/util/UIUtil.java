@@ -19,8 +19,12 @@
 
 package org.geometerplus.android.util;
 
-import java.util.Queue;
 import java.util.LinkedList;
+import java.util.Queue;
+
+import org.geometerplus.fbreader.fbreader.ActionCode;
+import org.geometerplus.zlibrary.core.application.ZLApplication;
+import org.geometerplus.zlibrary.core.resources.ZLResource;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -29,9 +33,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.widget.Toast;
 
-import org.geometerplus.zlibrary.core.resources.ZLResource;
-
 import com.onyx.android.sdk.ui.dialog.DialogLoading;
+import com.onyx.android.sdk.ui.dialog.DialogLoading.onFinishReaderListener;
 
 public abstract class UIUtil {
 	private static final Object ourMonitor = new Object();
@@ -117,6 +120,15 @@ public abstract class UIUtil {
 	        public void run() {
 //				final ProgressDialog progress = ProgressDialog.show(activity, null, message, true, false);
 	            final DialogLoading dialogLoading = new DialogLoading(activity, message);
+	            dialogLoading.SetOnFinishReaderListener(new onFinishReaderListener()
+	            {
+
+	                @Override
+	                public void onFinishReader()
+	                {
+	                    activity.onBackPressed();
+	                }
+	            });
 	            dialogLoading.show();
 
 	            final Thread runner = new Thread() {
