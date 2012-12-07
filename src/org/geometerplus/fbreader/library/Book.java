@@ -27,7 +27,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Set;
@@ -55,7 +54,6 @@ import android.util.Log;
 
 import com.onyx.android.sdk.data.cms.OnyxCmsCenter;
 import com.onyx.android.sdk.data.cms.OnyxMetadata;
-import com.onyx.android.sdk.data.util.FileUtil;
 import com.onyx.android.sdk.data.util.RefValue;
 
 public class Book {
@@ -453,96 +451,101 @@ public class Book {
 	        }
 	    });
 
-	    OnyxMetadata data = OnyxMetadata.createFromFile(File.getPath(), true);
-	    if (data != null) {
-	        String md5 = data.getMD5();
-	        
-	        Context ctx = ((ZLAndroidLibrary)ZLAndroidLibrary.Instance()).getActivity();
-	        if (OnyxCmsCenter.getMetadata(ctx, data)) {
-	            data.setTitle(myTitle);
-	            ArrayList<String> authors = new ArrayList<String>();
-	            if (myAuthors != null) {
-	                for (Author a : myAuthors) {
-	                    authors.add(a.DisplayName);
-	                }
-	            }
-	            data.setAuthors(authors);
-	            data.setLanguage(myLanguage);
-	            data.setEncoding(myEncoding);
-	            ArrayList<String> tags = new ArrayList<String>();
-	            if (myTags != null) {
-	                for (Tag t : myTags) {
-	                    tags.add(t.Name);
-	                }
-	                data.setTags(tags);
-	            }
-	            if (data.getMD5() == null || !data.getMD5().equals(md5)) {
-	                data.setMD5(md5);
-	            }
+	    try {
+	        OnyxMetadata data = OnyxMetadata.createFromFile(File.getPath(), true);
+	        if (data != null) {
+	            String md5 = data.getMD5();
 
-	            OnyxCmsCenter.updateMetadata(ctx, data);
-	        }
-	        else {
-	            data.setTitle(myTitle);
-	            ArrayList<String> authors = new ArrayList<String>();
-	            if (myAuthors != null) {
-	                for (Author a : myAuthors) {
-	                    authors.add(a.DisplayName);
-	                }
-	            }
-	            data.setAuthors(authors);
-	            data.setLanguage(myLanguage);
-	            data.setEncoding(myEncoding);
-	            ArrayList<String> tags = new ArrayList<String>();
-	            if (myTags != null) {
-	                for (Tag t : myTags) {
-	                    tags.add(t.Name);
-	                }
-	                data.setTags(tags);
-	            }
-
-	            OnyxCmsCenter.insertMetadata(ctx, data);
-	        }
-
-	        Log.d(TAG, "check cover");
-	        ZLImage image = this.getCover();
-	        if (image != null) {
-	            Log.d(TAG, "cover is not null");
-	            RefValue<Bitmap> result = new RefValue<Bitmap>();
-	            if (!OnyxCmsCenter.getThumbnail(ctx, data, result)) {
-	                if (image instanceof ZLLoadableImage) {
-	                    final ZLLoadableImage loadableImage = (ZLLoadableImage)image;
-	                    if (!loadableImage.isSynchronized()) {
-	                        loadableImage.synchronize();
+	            Context ctx = ((ZLAndroidLibrary)ZLAndroidLibrary.Instance()).getActivity();
+	            if (OnyxCmsCenter.getMetadata(ctx, data)) {
+	                data.setTitle(myTitle);
+	                ArrayList<String> authors = new ArrayList<String>();
+	                if (myAuthors != null) {
+	                    for (Author a : myAuthors) {
+	                        authors.add(a.DisplayName);
 	                    }
 	                }
+	                data.setAuthors(authors);
+	                data.setLanguage(myLanguage);
+	                data.setEncoding(myEncoding);
+	                ArrayList<String> tags = new ArrayList<String>();
+	                if (myTags != null) {
+	                    for (Tag t : myTags) {
+	                        tags.add(t.Name);
+	                    }
+	                    data.setTags(tags);
+	                }
+	                if (data.getMD5() == null || !data.getMD5().equals(md5)) {
+	                    data.setMD5(md5);
+	                }
 
-	                final ZLAndroidImageData image_data =
-	                        ((ZLAndroidImageManager)ZLAndroidImageManager.Instance()).getImageData(image);
-	                if (image_data != null) {
-	                    Log.d(TAG, "image data not null, begin insert thumbnail");
-	                    final DisplayMetrics metrics = new DisplayMetrics();
-	                    Activity a = ((ZLAndroidLibrary)ZLAndroidLibrary.Instance()).getActivity();
-	                    a.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+	                OnyxCmsCenter.updateMetadata(ctx, data);
+	            }
+	            else {
+	                data.setTitle(myTitle);
+	                ArrayList<String> authors = new ArrayList<String>();
+	                if (myAuthors != null) {
+	                    for (Author a : myAuthors) {
+	                        authors.add(a.DisplayName);
+	                    }
+	                }
+	                data.setAuthors(authors);
+	                data.setLanguage(myLanguage);
+	                data.setEncoding(myEncoding);
+	                ArrayList<String> tags = new ArrayList<String>();
+	                if (myTags != null) {
+	                    for (Tag t : myTags) {
+	                        tags.add(t.Name);
+	                    }
+	                    data.setTags(tags);
+	                }
 
-	                    final int maxHeight = metrics.heightPixels * 2 / 3;
-	                    final int maxWidth = maxHeight * 2 / 3;
-	                    final Bitmap cover = image_data.getBitmap(2 * maxWidth, 2 * maxHeight);
-	                    if (cover != null) {
-	                        Log.d(TAG, "cover bitmap is not null"); 
-	                        if (!OnyxCmsCenter.insertThumbnail(ctx, data, cover)) {
-	                            Log.d(TAG, "insert thumbnail failed");
+	                OnyxCmsCenter.insertMetadata(ctx, data);
+	            }
+
+	            Log.d(TAG, "check cover");
+	            ZLImage image = this.getCover();
+	            if (image != null) {
+	                Log.d(TAG, "cover is not null");
+	                RefValue<Bitmap> result = new RefValue<Bitmap>();
+	                if (!OnyxCmsCenter.getThumbnail(ctx, data, result)) {
+	                    if (image instanceof ZLLoadableImage) {
+	                        final ZLLoadableImage loadableImage = (ZLLoadableImage)image;
+	                        if (!loadableImage.isSynchronized()) {
+	                            loadableImage.synchronize();
+	                        }
+	                    }
+
+	                    final ZLAndroidImageData image_data =
+	                            ((ZLAndroidImageManager)ZLAndroidImageManager.Instance()).getImageData(image);
+	                    if (image_data != null) {
+	                        Log.d(TAG, "image data not null, begin insert thumbnail");
+	                        final DisplayMetrics metrics = new DisplayMetrics();
+	                        Activity a = ((ZLAndroidLibrary)ZLAndroidLibrary.Instance()).getActivity();
+	                        a.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+	                        final int maxHeight = metrics.heightPixels * 2 / 3;
+	                        final int maxWidth = maxHeight * 2 / 3;
+	                        final Bitmap cover = image_data.getBitmap(2 * maxWidth, 2 * maxHeight);
+	                        if (cover != null) {
+	                            Log.d(TAG, "cover bitmap is not null"); 
+	                            if (!OnyxCmsCenter.insertThumbnail(ctx, data, cover)) {
+	                                Log.d(TAG, "insert thumbnail failed");
+	                            }
+	                            else {
+	                                Log.d(TAG, "insert thumbnail successfully");
+	                            }
 	                        }
 	                        else {
-	                            Log.d(TAG, "insert thumbnail successfully");
+	                            Log.d(TAG, "cover bitmap is null"); 
 	                        }
-	                    }
-	                    else {
-	                        Log.d(TAG, "cover bitmap is null"); 
 	                    }
 	                }
 	            }
 	        }
+	    }
+	    catch (Throwable th) {
+	        Log.w(TAG, th);
 	    }
 
 		myIsSaved = true;
