@@ -78,6 +78,10 @@ public final class FBView extends ZLTextView {
 			return true;
 		}
 
+		if (!myReader.getTextView().isSelectionEmpty()) {
+		    return true;
+		}
+
 		final ZLTextRegion region = findRegion(x, y, MAX_SELECTION_DISTANCE, ZLTextRegion.HyperlinkFilter);
 		if (region != null) {
 			selectRegion(region);
@@ -123,6 +127,10 @@ public final class FBView extends ZLTextView {
 			return true;
 		}
 
+		if (!myReader.getTextView().isSelectionEmpty()) {
+		    return true;
+		}
+
 		if (myReader.AllowScreenBrightnessAdjustmentOption.getValue() && x < myContext.getWidth() / 10) {
 			myIsBrightnessAdjustmentInProgress = true;
 			myStartY = y;
@@ -161,6 +169,10 @@ public final class FBView extends ZLTextView {
 		if (cursor != ZLTextSelectionCursor.None) {
 			moveSelectionCursorTo(cursor, x, y);
 			return true;
+		}
+
+		if (!myReader.getTextView().isSelectionEmpty()) {
+		    return true;
 		}
 
 		synchronized (this) {
@@ -603,6 +615,15 @@ public final class FBView extends ZLTextView {
 		if (getCountOfSelectedWords() > 0) {
 			myReader.runAction(ActionCode.SELECTION_SHOW_PANEL);
 		}
+	}
+
+	@Override
+	public void clearSelection()
+	{
+	    super.clearSelection();
+	    if (getCountOfSelectedWords() <= 0) {
+	        myReader.runAction(ActionCode.SELECTION_HIDE_PANEL);
+	    }
 	}
 
 	public String getSelectedText() {
