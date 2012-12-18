@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <dictionaries>
+    <dictionary
+        id="QuickDic"
+        title="QuickDic"
+        package="com.hughes.android.dictionary"
+        class=".DictionaryManagerActivity"
+        pattern="%s"
+        list="always"
+    />
 	<dictionary
 		id="ColorDict"
 		title="ColorDict 3"
