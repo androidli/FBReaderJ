@@ -19,27 +19,33 @@
 
 package org.geometerplus.android.fbreader;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
-import android.app.*;
-import android.content.*;
-import android.net.Uri;
-import android.util.DisplayMetrics;
-import android.view.Gravity;
-
+import org.geometerplus.android.util.PackageUtil;
+import org.geometerplus.android.util.UIUtil;
 import org.geometerplus.zlibrary.core.filesystem.ZLFile;
 import org.geometerplus.zlibrary.core.options.ZLStringOption;
 import org.geometerplus.zlibrary.core.resources.ZLResource;
-import org.geometerplus.zlibrary.core.xml.ZLXMLReaderAdapter;
 import org.geometerplus.zlibrary.core.xml.ZLStringMap;
-
+import org.geometerplus.zlibrary.core.xml.ZLXMLReaderAdapter;
 import org.geometerplus.zlibrary.text.view.ZLTextRegion;
 import org.geometerplus.zlibrary.text.view.ZLTextWord;
+import org.geometerplus.zlibrary.ui.android.R;
 
-import org.geometerplus.zlibrary.ui.android.library.ZLAndroidLibrary;
-
-import org.geometerplus.android.util.UIUtil;
-import org.geometerplus.android.util.PackageUtil;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
+import android.widget.Toast;
 
 public abstract class DictionaryUtil {
 	private static int FLAG_INSTALLED_ONLY = 1;
@@ -255,25 +261,13 @@ public abstract class DictionaryUtil {
 
 		final PackageInfo info = getCurrentDictionaryInfo(singleWord);
 		final Intent intent = getDictionaryIntent(info, text);
+
 		try {
-			if ("ColorDict".equals(info.Id)) {
-				final DisplayMetrics metrics = new DisplayMetrics();
-				activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
-				final int screenHeight = metrics.heightPixels;
-				final int topSpace = selectionTop;
-				final int bottomSpace = metrics.heightPixels - selectionBottom;
-				final boolean showAtBottom = bottomSpace >= topSpace;
-				final int space = (showAtBottom ? bottomSpace : topSpace) - 20;
-				final int maxHeight = Math.min(400, screenHeight * 2 / 3);
-				final int minHeight = Math.min(200, screenHeight * 2 / 3);
-				intent.putExtra(ColorDict3.HEIGHT, Math.max(minHeight, Math.min(maxHeight, space)));
-				intent.putExtra(ColorDict3.GRAVITY, showAtBottom ? Gravity.BOTTOM : Gravity.TOP);
-				final ZLAndroidLibrary zlibrary = (ZLAndroidLibrary)ZLAndroidLibrary.Instance();
-				intent.putExtra(ColorDict3.FULLSCREEN, !zlibrary.ShowStatusBarOption.getValue());
-			}
-			activity.startActivity(intent);
+		    if ("QuickDic".equals(info.Id)) {
+		        activity.startActivity(intent);
+		    }
 		} catch (ActivityNotFoundException e) {
-			DictionaryUtil.installDictionaryIfNotInstalled(activity, singleWord);
+		    Toast.makeText(activity, R.string.did_not_find_the_dictionary, Toast.LENGTH_LONG).show();
 		}
 	}
 
