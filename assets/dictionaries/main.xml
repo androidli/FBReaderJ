@@ -5,6 +5,8 @@
         title="QuickDic"
         package="com.hughes.android.dictionary"
         class=".DictionaryManagerActivity"
+        action="android.intent.action.SEARCH"
+        dataKey="query"
         pattern="%s"
         list="always"
     />
