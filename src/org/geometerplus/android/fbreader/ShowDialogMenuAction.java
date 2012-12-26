@@ -411,6 +411,11 @@ public class ShowDialogMenuAction extends FBAndroidAction
                 });
                 dlg.show();
             }
+
+            public void showReaderSettings()
+            {
+            }
+
         };
 
         sDialogReaderMenu = new DialogReaderMenu(BaseActivity, menu_handler);
