@@ -280,8 +280,14 @@ public class ShowDialogMenuAction extends FBAndroidAction
             @Override
             public void toggleFontEmbolden()
             {
-                // TODO Auto-generated method stub
-                
+                if (mBaseStyle.BoldOption.getValue()) {
+                    mBaseStyle.BoldOption.setValue(false);
+                }
+                else {
+                    mBaseStyle.BoldOption.setValue(true);
+                }
+                Reader.clearTextCaches();
+                Reader.getViewWidget().repaint();
             }
 
             @Override
