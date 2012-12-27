@@ -136,6 +136,12 @@ public class ShowDialogMenuAction extends FBAndroidAction
                         Reader.clearTextCaches();
                         Reader.getViewWidget().repaint();
                 }
+                else if (property == LineSpacingProperty.enlarge) {
+                    ZLApplication.Instance().runAction(ActionCode.INCREASE_LINESPACING);
+                }
+                else if (property == LineSpacingProperty.decreases) {
+                    ZLApplication.Instance().runAction(ActionCode.DECREASE_LINESPACING);
+                }
             }
             
             @Override
@@ -274,8 +280,9 @@ public class ShowDialogMenuAction extends FBAndroidAction
             @Override
             public void toggleFontEmbolden()
             {
-                // TODO Auto-generated method stub
-                
+                mBaseStyle.BoldOption.setValue(!mBaseStyle.BoldOption.getValue());
+                Reader.clearTextCaches();
+                Reader.getViewWidget().repaint();
             }
 
             @Override
@@ -410,6 +417,13 @@ public class ShowDialogMenuAction extends FBAndroidAction
                     }
                 });
                 dlg.show();
+            }
+
+            @Override
+            public void showReaderSettings()
+            {
+                // TODO Auto-generated method stub
+                
             }
         };
 
