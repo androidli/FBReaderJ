@@ -33,7 +33,6 @@ import org.geometerplus.fbreader.library.Library;
 import org.geometerplus.zlibrary.core.application.ZLApplication;
 import org.geometerplus.zlibrary.core.application.ZLKeyBindings;
 import org.geometerplus.zlibrary.core.filesystem.ZLFile;
-import org.geometerplus.zlibrary.core.library.ZLibrary;
 import org.geometerplus.zlibrary.core.options.ZLBooleanOption;
 import org.geometerplus.zlibrary.core.options.ZLColorOption;
 import org.geometerplus.zlibrary.core.options.ZLEnumOption;
@@ -45,6 +44,9 @@ import org.geometerplus.zlibrary.text.hyphenation.ZLTextHyphenator;
 import org.geometerplus.zlibrary.text.view.ZLTextFixedPosition;
 import org.geometerplus.zlibrary.text.view.ZLTextPosition;
 import org.geometerplus.zlibrary.text.view.ZLTextWordCursor;
+
+import com.onyx.android.sdk.ui.dialog.DialogPageMargins;
+import com.onyx.android.sdk.ui.dialog.DialogSettingsPageMargins;
 
 public final class FBReaderApp extends ZLApplication {
 	public final ZLBooleanOption AllowScreenBrightnessAdjustmentOption =
@@ -76,19 +78,22 @@ public final class FBReaderApp extends ZLApplication {
 	public final ZLEnumOption<ImageTappingAction> ImageTappingActionOption =
 		new ZLEnumOption<ImageTappingAction>("Options", "ImageTappingAction", ImageTappingAction.openImageView);
 
+	public final ZLIntegerRangeOption AllFrameMarginsOption;
 	public final ZLIntegerRangeOption LeftMarginOption;
 	public final ZLIntegerRangeOption RightMarginOption;
 	public final ZLIntegerRangeOption TopMarginOption;
 	public final ZLIntegerRangeOption BottomMarginOption;
 	{
-		final int dpi = ZLibrary.Instance().getDisplayDPI();
-		final int x = ZLibrary.Instance().getPixelWidth();
-		final int y = ZLibrary.Instance().getPixelHeight();
-		final int horMargin = Math.min(dpi / 5, Math.min(x, y) / 30);
-		LeftMarginOption = new ZLIntegerRangeOption("Options", "LeftMargin", 0, 100, horMargin);
-		RightMarginOption = new ZLIntegerRangeOption("Options", "RightMargin", 0, 100, horMargin);
-		TopMarginOption = new ZLIntegerRangeOption("Options", "TopMargin", 0, 100, 0);
-		BottomMarginOption = new ZLIntegerRangeOption("Options", "BottomMargin", 0, 100, 4);
+	    int defaultMargins = Integer.valueOf(DialogPageMargins.sPageMarginsArray[DialogPageMargins.sPageMarginsArray.length - 2]);
+	    int minValue = Integer.valueOf(DialogPageMargins.sPageMarginsArray[0]);
+	    int maxValue = Integer.valueOf(DialogPageMargins.sPageMarginsArray[DialogPageMargins.sPageMarginsArray.length - 1]);
+
+	    LeftMarginOption = new ZLIntegerRangeOption("Options", "LeftMargin", minValue, maxValue, defaultMargins);
+	    RightMarginOption = new ZLIntegerRangeOption("Options", "RightMargin", minValue, maxValue, defaultMargins);
+	    TopMarginOption = new ZLIntegerRangeOption("Options", "ToptMargin", minValue, maxValue, defaultMargins);
+	    BottomMarginOption = new ZLIntegerRangeOption("Options", "BottomMargin", minValue, maxValue, defaultMargins);
+
+	    AllFrameMarginsOption = new ZLIntegerRangeOption("Options", DialogSettingsPageMargins.sPageMargins, minValue, maxValue, defaultMargins);
 	}
 
 	public final ZLIntegerRangeOption ScrollbarTypeOption =
@@ -562,5 +567,15 @@ public final class FBReaderApp extends ZLApplication {
 	public FBView getfootnoteView()
 	{
 	    return FootnoteView;
+	}
+
+	public void setAllFrameMarginsOptionValue(int margin)
+	{
+	    AllFrameMarginsOption.setValue(margin);
+
+	    LeftMarginOption.setValue(margin);
+	    RightMarginOption.setValue(margin);
+	    TopMarginOption.setValue(margin);
+	    BottomMarginOption.setValue(margin);
 	}
 }
