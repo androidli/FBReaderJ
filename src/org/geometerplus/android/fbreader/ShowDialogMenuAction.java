@@ -42,6 +42,7 @@ import com.onyx.android.sdk.ui.dialog.DialogReaderMenu.LineSpacingProperty;
 import com.onyx.android.sdk.ui.dialog.DialogReaderMenu.RotationScreenProperty;
 import com.onyx.android.sdk.ui.dialog.DialogScreenRefresh;
 import com.onyx.android.sdk.ui.dialog.DialogScreenRefresh.onScreenRefreshListener;
+import com.onyx.android.sdk.ui.dialog.DialogSettingsPageMargins;
 /**
  * @author dxwts
  *
@@ -422,8 +423,22 @@ public class ShowDialogMenuAction extends FBAndroidAction
             @Override
             public void showReaderSettings()
             {
-                // TODO Auto-generated method stub
-                
+                final FBReaderApp fbreader = (FBReaderApp)FBReaderApp.Instance();
+                DialogSettingsPageMargins dlg = new DialogSettingsPageMargins(mFbReader, fbreader.AllFrameMarginsOption.getValue());
+                dlg.setOnPageMarginsListener(new DialogSettingsPageMargins.onPageMarginsListener()
+                {
+
+                    @Override
+                    public int onSetPageMargins(int margin)
+                    {
+                        fbreader.setAllFrameMarginsOptionValue(margin);
+                        fbreader.clearTextCaches();
+                        fbreader.getViewWidget().repaint();
+
+                        return fbreader.AllFrameMarginsOption.getValue();
+                    }
+                });
+                dlg.show();
             }
         };
 
