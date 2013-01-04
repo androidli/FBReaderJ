@@ -452,7 +452,7 @@ public class Book {
 	    });
 
 	    try {
-	        OnyxMetadata data = OnyxMetadata.createFromFile(File.getPath(), true);
+	        OnyxMetadata data = OnyxMetadata.createFromFile(File.getPath());
 	        if (data != null) {
 	            String md5 = data.getMD5();
 
