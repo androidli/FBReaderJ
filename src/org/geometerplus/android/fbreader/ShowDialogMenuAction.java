@@ -440,7 +440,7 @@ public class ShowDialogMenuAction extends FBAndroidAction
                 });
                 dlg.show();
             }
-        ;
+        };
 
         sDialogReaderMenu = new DialogReaderMenu(BaseActivity, menu_handler);
         sDialogReaderMenu.setCanceledOnTouchOutside(true);
