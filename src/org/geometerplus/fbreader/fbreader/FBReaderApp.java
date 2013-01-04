@@ -46,7 +46,7 @@ import org.geometerplus.zlibrary.text.view.ZLTextPosition;
 import org.geometerplus.zlibrary.text.view.ZLTextWordCursor;
 
 import com.onyx.android.sdk.ui.dialog.DialogPageMargins;
-import com.onyx.android.sdk.ui.dialog.DialogSettingsPageMargins;
+import com.onyx.android.sdk.ui.dialog.DialogReaderSettings;
 
 public final class FBReaderApp extends ZLApplication {
 	public final ZLBooleanOption AllowScreenBrightnessAdjustmentOption =
@@ -93,7 +93,7 @@ public final class FBReaderApp extends ZLApplication {
 	    TopMarginOption = new ZLIntegerRangeOption("Options", "ToptMargin", minValue, maxValue, defaultMargins);
 	    BottomMarginOption = new ZLIntegerRangeOption("Options", "BottomMargin", minValue, maxValue, defaultMargins);
 
-	    AllFrameMarginsOption = new ZLIntegerRangeOption("Options", DialogSettingsPageMargins.sPageMargins, minValue, maxValue, defaultMargins);
+	    AllFrameMarginsOption = new ZLIntegerRangeOption("Options", DialogReaderSettings.sPageMargins, minValue, maxValue, defaultMargins);
 	}
 
 	public final ZLIntegerRangeOption ScrollbarTypeOption =
