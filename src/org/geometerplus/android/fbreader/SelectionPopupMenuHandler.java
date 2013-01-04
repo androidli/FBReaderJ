@@ -9,13 +9,6 @@ import com.onyx.android.sdk.ui.SelectionPopupMenu.ISelectionHandler;
 
 public class SelectionPopupMenuHandler implements ISelectionHandler
 {
-    private FBReader mFBReader = null;
-
-    public SelectionPopupMenuHandler(FBReader reader)
-    {
-        mFBReader = reader;
-    }
-
     @Override
     public void copy()
     { 
@@ -46,7 +39,6 @@ public class SelectionPopupMenuHandler implements ISelectionHandler
         final FBReaderApp fbReader = (FBReaderApp)FBReaderApp.Instance();
         final ZLTextView view = fbReader.getTextView();
         view.clearSelection();
-        mFBReader.getSelectionPopupMenu().hide();
     }
 
 }

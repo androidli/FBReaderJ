@@ -42,6 +42,7 @@ import com.onyx.android.sdk.ui.dialog.DialogReaderMenu.LineSpacingProperty;
 import com.onyx.android.sdk.ui.dialog.DialogReaderMenu.RotationScreenProperty;
 import com.onyx.android.sdk.ui.dialog.DialogScreenRefresh;
 import com.onyx.android.sdk.ui.dialog.DialogScreenRefresh.onScreenRefreshListener;
+import com.onyx.android.sdk.ui.dialog.DialogSettingsPageMargins;
 /**
  * @author dxwts
  *
@@ -135,6 +136,12 @@ public class ShowDialogMenuAction extends FBAndroidAction
                         option.setValue(8);
                         Reader.clearTextCaches();
                         Reader.getViewWidget().repaint();
+                }
+                else if (property == LineSpacingProperty.enlarge) {
+                    ZLApplication.Instance().runAction(ActionCode.INCREASE_LINESPACING);
+                }
+                else if (property == LineSpacingProperty.decreases) {
+                    ZLApplication.Instance().runAction(ActionCode.DECREASE_LINESPACING);
                 }
             }
             
@@ -274,8 +281,9 @@ public class ShowDialogMenuAction extends FBAndroidAction
             @Override
             public void toggleFontEmbolden()
             {
-                // TODO Auto-generated method stub
-                
+                mBaseStyle.BoldOption.setValue(!mBaseStyle.BoldOption.getValue());
+                Reader.clearTextCaches();
+                Reader.getViewWidget().repaint();
             }
 
             @Override
@@ -412,11 +420,27 @@ public class ShowDialogMenuAction extends FBAndroidAction
                 dlg.show();
             }
 
+            @Override
             public void showReaderSettings()
             {
-            }
+                final FBReaderApp fbreader = (FBReaderApp)FBReaderApp.Instance();
+                DialogSettingsPageMargins dlg = new DialogSettingsPageMargins(mFbReader, fbreader.AllFrameMarginsOption.getValue());
+                dlg.setOnPageMarginsListener(new DialogSettingsPageMargins.onPageMarginsListener()
+                {
 
-        };
+                    @Override
+                    public int onSetPageMargins(int margin)
+                    {
+                        fbreader.setAllFrameMarginsOptionValue(margin);
+                        fbreader.clearTextCaches();
+                        fbreader.getViewWidget().repaint();
+
+                        return fbreader.AllFrameMarginsOption.getValue();
+                    }
+                });
+                dlg.show();
+            }
+        ;
 
         sDialogReaderMenu = new DialogReaderMenu(BaseActivity, menu_handler);
         sDialogReaderMenu.setCanceledOnTouchOutside(true);

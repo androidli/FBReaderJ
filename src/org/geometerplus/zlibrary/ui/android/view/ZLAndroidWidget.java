@@ -480,6 +480,13 @@ public class ZLAndroidWidget extends View implements ZLViewWidget, View.OnLongCl
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		final ZLApplication application = ZLApplication.Instance();
 
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+		    final FBReaderApp fbreader = (FBReaderApp)FBReaderApp.Instance();
+		    if (!fbreader.getTextView().isSelectionEmpty()) {
+		        fbreader.getTextView().clearSelection();
+		        return true;
+		    }
+		}
 		if (application.hasActionForKey(keyCode, true) ||
 			application.hasActionForKey(keyCode, false)) {
 			if (myKeyUnderTracking != -1) {
