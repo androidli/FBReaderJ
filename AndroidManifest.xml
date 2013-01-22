@@ -224,5 +224,7 @@
 			</intent-filter>
 		</receiver>
 		<activity android:name="org.geometerplus.android.fbreader.tips.TipsActivity" android:configChanges="orientation|keyboardHidden" android:theme="@android:style/Theme.Dialog"/>
+		<activity android:name="org.geometerplus.android.fbreader.SpeakActivity" android:configChanges="orientation|keyboardHidden" android:theme="@android:style/Theme.Dialog">
+		</activity>
 	</application>
 </manifest>
