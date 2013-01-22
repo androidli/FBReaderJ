@@ -84,4 +84,6 @@ public interface ActionCode {
 	String SHOW_DIALOG_MENU = "showdialogmenu";
 	String ADD_BOOKMARK = "addbookmark";
 	String SHOW_DIALOG_BOOKMARKS = "showdialogbookmarks";
+	
+	String TTS_PLAY = "ttsplay";
 }

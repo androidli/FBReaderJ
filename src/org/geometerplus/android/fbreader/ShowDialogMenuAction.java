@@ -25,6 +25,7 @@ import org.geometerplus.zlibrary.text.view.style.ZLTextStyleCollection;
 import org.geometerplus.zlibrary.ui.android.library.ZLAndroidLibrary;
 import org.geometerplus.zlibrary.ui.android.view.AndroidFontUtil;
 
+import android.util.Log;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
@@ -55,6 +56,7 @@ public class ShowDialogMenuAction extends FBAndroidAction
     
     private static DialogReaderMenu sDialogReaderMenu;
     private FBReader mFbReader = null;
+    private Speaker mSpeaker = null;
     
     ShowDialogMenuAction(FBReader baseActivity, FBReaderApp fbreader)
     {
@@ -70,6 +72,7 @@ public class ShowDialogMenuAction extends FBAndroidAction
     {
         final ZLTextStyleCollection collection = ZLTextStyleCollection.Instance();
         mBaseStyle = collection.getBaseStyle();
+        
         
         DialogReaderMenu.IMenuHandler menu_handler = new DialogReaderMenu.IMenuHandler()
         {
@@ -439,6 +442,37 @@ public class ShowDialogMenuAction extends FBAndroidAction
                     }
                 });
                 dlg.show();
+            }
+
+            @Override
+            public void ttsInit() {
+                    mSpeaker = new Speaker(mFbReader);
+                
+            }
+
+            @Override
+            public void ttsSpeak() {
+                if(!sDialogReaderMenu.getTtsState()) {
+                    mSpeaker.play();
+                    sDialogReaderMenu.setTtsState(true);
+                } else {
+                    mSpeaker.stopTalking();
+                    sDialogReaderMenu.setTtsState(false);
+                }
+            }
+
+            @Override
+            public void ttsPause() {
+                mSpeaker.stopTalking();
+                
+            }
+
+            @Override
+            public void ttsStop() {
+                mSpeaker.stopTalking();
+                mSpeaker.clearHighlighting();
+                sDialogReaderMenu.setTtsState(false);
+                
             }
         };
 
