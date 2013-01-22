@@ -182,7 +182,6 @@ public final class FBReader extends ZLAndroidActivity {
 		fbReader.addAction(ActionCode.SHOW_DIALOG_MENU, new ShowDialogMenuAction(this, fbReader));
 		fbReader.addAction(ActionCode.ADD_BOOKMARK, new AddBookmarkAction(this, fbReader));
 		fbReader.addAction(ActionCode.SHOW_DIALOG_BOOKMARKS, new ShowDialogBookmarksAction(this, fbReader));
-		fbReader.addAction(ActionCode.SHOW_TTS_ACTIVITY, new ShowTTSAction(this, fbReader));
 	}
 
 	@Override

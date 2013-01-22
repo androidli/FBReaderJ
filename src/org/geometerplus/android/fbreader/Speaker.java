@@ -262,29 +262,4 @@ public class Speaker implements TextToSpeech.OnInitListener, TextToSpeech.OnUtte
     public void clearHighlighting() {
         mFBReaderApp.getTextView().clearHighlighting();
     }
-    
-    private AudioManager am;
-    private int maxVolume;
-    public AudioManager getAudioManager() {
-        if ( am==null ) {
-            am = (AudioManager)mContext.getSystemService(mContext.AUDIO_SERVICE);
-            maxVolume = am.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-        }
-        return am;
-    }
-    
-    public int getVolume() {
-        AudioManager am = getAudioManager();
-        if (am!=null) {
-            return am.getStreamVolume(AudioManager.STREAM_MUSIC) * 100 / maxVolume;
-        }
-        return 0;
-    }
-    
-    public void setVolume( int volume ) {
-        AudioManager am = getAudioManager();
-        if (am!=null) {
-            am.setStreamVolume(AudioManager.STREAM_MUSIC, volume * maxVolume / 100, 0);
-        }
-    }
 }
