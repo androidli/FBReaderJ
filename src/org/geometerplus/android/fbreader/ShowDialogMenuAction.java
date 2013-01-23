@@ -452,7 +452,7 @@ public class ShowDialogMenuAction extends FBAndroidAction
 
             @Override
             public void ttsSpeak() {
-                if(!sDialogReaderMenu.getTtsState()) {
+                if (!mSpeaker.isActive()) {
                     mSpeaker.play();
                     sDialogReaderMenu.setTtsState(true);
                 } else {
