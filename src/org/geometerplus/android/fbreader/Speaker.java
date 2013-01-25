@@ -1,9 +1,8 @@
 /**
- * 
+ *
  */
 package org.geometerplus.android.fbreader;
 
-import org.geometerplus.android.fbreader.api.ApiClientImplementation;
 import org.geometerplus.android.fbreader.api.ApiException;
 import org.geometerplus.android.fbreader.api.TextPosition;
 import org.geometerplus.fbreader.fbreader.FBReaderApp;
@@ -11,23 +10,13 @@ import org.geometerplus.zlibrary.text.view.ZLTextElement;
 import org.geometerplus.zlibrary.text.view.ZLTextFixedPosition;
 import org.geometerplus.zlibrary.text.view.ZLTextWord;
 import org.geometerplus.zlibrary.text.view.ZLTextWordCursor;
-import org.geometerplus.zlibrary.ui.android.R;
 
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
 import android.speech.tts.TextToSpeech;
-import android.telephony.PhoneStateListener;
-import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.view.View;
-import android.widget.SeekBar;
-import android.widget.Toast;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -40,29 +29,22 @@ import java.util.Locale;
 public class Speaker implements TextToSpeech.OnInitListener, TextToSpeech.OnUtteranceCompletedListener, Handler.Callback  {
 
     private static final String TAG = "Speaker";
-    
-    private volatile int myInitializationStatus;
-    private static int API_INITIALIZED = 1;
-    private static int TTS_INITIALIZED = 2;
-    private static int FULLY_INITIALIZED = API_INITIALIZED | TTS_INITIALIZED;
-    
+
     private static final String UTTERANCE_ID = "FBReaderTTS";
 
-    private TextToSpeech myTTS;
-
-    private SharedPreferences myPreferences;
+    private final TextToSpeech myTTS;
 
     private int myParagraphIndex = -1;
     private int myParagraphsNumber;
 
     private boolean myIsActive = false;
-    
+
     private Context mContext = null;
     private FBReaderApp mFBReaderApp = null;
-    
+
     public Speaker(Context context) {
       mContext = context;
-      
+
           setActive(false);
 
           myTTS = new TextToSpeech(mContext, this);
@@ -70,6 +52,7 @@ public class Speaker implements TextToSpeech.OnInitListener, TextToSpeech.OnUtte
     }
 
     // implements TextToSpeech.OnInitListener
+    @Override
     public void onInit(int status) {
 //        if (myInitializationStatus != FULLY_INITIALIZED) {
 //            myInitializationStatus |= TTS_INITIALIZED;
@@ -112,8 +95,6 @@ public class Speaker implements TextToSpeech.OnInitListener, TextToSpeech.OnUtte
 
         myParagraphIndex = mFBReaderApp.getTextView().getStartCursor().getParagraphIndex();
         myParagraphsNumber = mFBReaderApp.Model.getTextModel().getParagraphsNumber();
-//        setActive(true);
-//        speakString(gotoNextParagraph());
     }
 
     @Override
@@ -156,7 +137,7 @@ public class Speaker implements TextToSpeech.OnInitListener, TextToSpeech.OnUtte
         if (active) {
             if (myWakeLock == null) {
                 myWakeLock =
-                    ((PowerManager)mContext.getSystemService(mContext.POWER_SERVICE))
+                    ((PowerManager)mContext.getSystemService(Context.POWER_SERVICE))
                         .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "FBReader TTS plugin");
                 myWakeLock.acquire();
             }
@@ -212,12 +193,16 @@ public class Speaker implements TextToSpeech.OnInitListener, TextToSpeech.OnUtte
             }
         return text;
     }
-    
+
     public void play() {
         setActive(true);
         speakString(gotoNextParagraph());
     }
-    
+
+    public void stop() {
+        stopTalking();
+    }
+
     public String getParagraphText(int paragraphIndex) {
         final StringBuffer sb = new StringBuffer();
         final ZLTextWordCursor cursor = new ZLTextWordCursor(mFBReaderApp.getTextView().getStartCursor());
@@ -232,12 +217,12 @@ public class Speaker implements TextToSpeech.OnInitListener, TextToSpeech.OnUtte
         }
         return sb.toString();
     }
-    
+
     public boolean isPageEndOfText() {
         final ZLTextWordCursor cursor = mFBReaderApp.getTextView().getEndCursor();
         return cursor.isEndOfParagraph() && cursor.getParagraphCursor().isLast();
     }
-    
+
     public void setPageStart(TextPosition position) {
         mFBReaderApp.getTextView().gotoPosition(position.ParagraphIndex, position.ElementIndex, position.CharIndex);
         mFBReaderApp.getViewWidget().repaint();
@@ -250,7 +235,7 @@ public class Speaker implements TextToSpeech.OnInitListener, TextToSpeech.OnUtte
             getZLTextPosition(end)
         );
     }
-    
+
     private ZLTextFixedPosition getZLTextPosition(TextPosition position) {
         return new ZLTextFixedPosition(
             position.ParagraphIndex,
@@ -258,8 +243,12 @@ public class Speaker implements TextToSpeech.OnInitListener, TextToSpeech.OnUtte
             position.CharIndex
         );
     }
-    
+
     public void clearHighlighting() {
         mFBReaderApp.getTextView().clearHighlighting();
+    }
+
+    public boolean isSpeaking() {
+        return myTTS.isSpeaking();
     }
 }
