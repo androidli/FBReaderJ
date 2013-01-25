@@ -131,6 +131,11 @@ public class Speaker implements TextToSpeech.OnInitListener, TextToSpeech.OnUtte
 
     private volatile PowerManager.WakeLock myWakeLock;
 
+    public synchronized boolean isActive()
+    {
+        return myIsActive;
+    }
+    
     private synchronized void setActive(final boolean active) {
         myIsActive = active;
 

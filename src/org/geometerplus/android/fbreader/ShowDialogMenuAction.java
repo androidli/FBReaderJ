@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.geometerplus.android.fbreader;
 
@@ -53,11 +53,11 @@ public class ShowDialogMenuAction extends FBAndroidAction
 
     private ArrayList<String> mFonts = null;
     private ZLTextBaseStyle mBaseStyle = null;
-    
+
     private static DialogReaderMenu sDialogReaderMenu;
     private FBReader mFbReader = null;
     private Speaker mSpeaker = null;
-    
+
     ShowDialogMenuAction(FBReader baseActivity, FBReaderApp fbreader)
     {
         super(baseActivity, fbreader);
@@ -72,51 +72,51 @@ public class ShowDialogMenuAction extends FBAndroidAction
     {
         final ZLTextStyleCollection collection = ZLTextStyleCollection.Instance();
         mBaseStyle = collection.getBaseStyle();
-        
-        
+
+
         DialogReaderMenu.IMenuHandler menu_handler = new DialogReaderMenu.IMenuHandler()
         {
-            
+
             @Override
             public void updateCurrentPage(LinearLayout l)
             {
                 // TODO Auto-generated method stub
-                
+
             }
-            
+
             @Override
             public void showTTsView()
             {
                 // TODO Auto-generated method stub
-                
+
             }
-            
+
             @Override
             public void showTOC()
             {
                 ShowDialogMenuAction.this.showDirectoryDialog(DirectoryTab.toc);
             }
-            
+
             @Override
             public void showSetFontView()
             {
                 // TODO Auto-generated method stub
-                
+
             }
-            
+
             @Override
             public void showLineSpacingView()
             {
                 // TODO Auto-generated method stub
-                
+
             }
-            
+
             @Override
             public void showBookMarks()
             {
                 ShowDialogMenuAction.this.showDirectoryDialog(DirectoryTab.bookmark);
             }
-            
+
             @Override
             public void setLineSpacing(LineSpacingProperty property)
             {
@@ -126,7 +126,7 @@ public class ShowDialogMenuAction extends FBAndroidAction
                         option.setValue(10);
                         Reader.clearTextCaches();
                         Reader.getViewWidget().repaint();
-                    
+
                 } else if (property == LineSpacingProperty.big) {
                     ZLIntegerRangeOption option =
                             ZLTextStyleCollection.Instance().getBaseStyle().LineSpaceOption;
@@ -147,7 +147,7 @@ public class ShowDialogMenuAction extends FBAndroidAction
                     ZLApplication.Instance().runAction(ActionCode.DECREASE_LINESPACING);
                 }
             }
-            
+
             @Override
             public void setFontFace()
             {
@@ -162,7 +162,7 @@ public class ShowDialogMenuAction extends FBAndroidAction
                 dlg.show();
                 dlg.setOnSettingsFontFaceListener(new onSettingsFontFaceListener()
                 {
-                    
+
                     @Override
                     public void settingfontFace(int location)
                     {
@@ -173,14 +173,14 @@ public class ShowDialogMenuAction extends FBAndroidAction
                     }
                 });
             }
-            
+
             @Override
             public void searchContent()
             {
 //                ZLApplication.Instance().doAction(ActionCode.SEARCH);
                 ZLApplication.Instance().runAction(ActionCode.SEARCH);
             }
-            
+
             @Override
             public void rotationScreen(int i)
             {
@@ -191,25 +191,25 @@ public class ShowDialogMenuAction extends FBAndroidAction
                     ZLApplication.Instance().runAction(ActionCode.SET_SCREEN_ORIENTATION_PORTRAIT);
                 }
             }
-            
+
             @Override
             public void previousPage()
             {
                 ZLApplication.Instance().runAction(ActionCode.TURN_PAGE_BACK);
             }
-            
+
             @Override
             public void nextPage()
             {
                 ZLApplication.Instance().runAction(ActionCode.TURN_PAGE_FORWARD);
             }
-            
+
             @Override
             public void increaseFontSize()
             {
                 ZLApplication.Instance().runAction(ActionCode.INCREASE_FONT);
             }
-            
+
             @Override
             public void gotoPage(int i)
             {
@@ -222,7 +222,7 @@ public class ShowDialogMenuAction extends FBAndroidAction
                 ZLApplication.Instance().getCurrentView().Application.getViewWidget().reset();
                 ZLApplication.Instance().getCurrentView().Application.getViewWidget().repaint();
             }
-            
+
             @Override
             public int getPageIndex()
             {
@@ -231,7 +231,7 @@ public class ShowDialogMenuAction extends FBAndroidAction
                 final PagePosition pos = view.pagePosition();
                 return pos.Current;
             }
-            
+
             @Override
             public int getPageCount()
             {
@@ -240,19 +240,19 @@ public class ShowDialogMenuAction extends FBAndroidAction
                 final PagePosition pos = view.pagePosition();
                 return pos.Total;
             }
-            
+
             @Override
             public String getFontFace()
             {
                 return mBaseStyle.FontFamilyOption.getValue();
             }
-            
+
             @Override
             public void decreaseFontSize()
             {
                 ZLApplication.Instance().runAction(ActionCode.DECREASE_FONT);
             }
-            
+
             @Override
             public void changeRotationScreen(RotationScreenProperty property)
             {
@@ -273,14 +273,14 @@ public class ShowDialogMenuAction extends FBAndroidAction
                     ZLApplication.Instance().runAction(ActionCode.SET_SCREEN_ORIENTATION_LANDSCAPE);
                 }
             }
-            
+
             @Override
             public void changeFontsize(FontSizeProperty property)
             {
                 // TODO Auto-generated method stub
-                
+
             }
-            
+
             @Override
             public void toggleFontEmbolden()
             {
@@ -319,56 +319,56 @@ public class ShowDialogMenuAction extends FBAndroidAction
             public void zoomToPage()
             {
                 // TODO Auto-generated method stub
-                
+
             }
 
             @Override
             public void zoomToWidth()
             {
                 // TODO Auto-generated method stub
-                
+
             }
 
             @Override
             public void zoomToHeight()
             {
                 // TODO Auto-generated method stub
-                
+
             }
 
             @Override
             public void zoomBySelection()
             {
                 // TODO Auto-generated method stub
-                
+
             }
 
             @Override
             public void zoomByTwoPoints()
             {
                 // TODO Auto-generated method stub
-                
+
             }
 
             @Override
             public void zoomByValue(double z)
             {
                 // TODO Auto-generated method stub
-                
+
             }
-            
+
             @Override
             public void zoomIn()
             {
                 // TODO Auto-generated method stub
-                
+
             }
-            
+
             @Override
             public void zoomOut()
             {
                 // TODO Auto-generated method stub
-                
+
             }
 
             @Override
@@ -449,7 +449,7 @@ public class ShowDialogMenuAction extends FBAndroidAction
                 if (mSpeaker == null) {
                     mSpeaker = new Speaker(mFbReader);
                 }
-                
+
             }
 
             @Override
@@ -473,7 +473,7 @@ public class ShowDialogMenuAction extends FBAndroidAction
                 mSpeaker.stop();
                 mSpeaker.clearHighlighting();
                 sDialogReaderMenu.setTtsState(false);
-                
+
             }
         };
 
