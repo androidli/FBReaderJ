@@ -25,7 +25,7 @@ import org.geometerplus.zlibrary.text.view.style.ZLTextStyleCollection;
 import org.geometerplus.zlibrary.ui.android.library.ZLAndroidLibrary;
 import org.geometerplus.zlibrary.ui.android.view.AndroidFontUtil;
 
-import android.util.Log;
+import android.content.pm.ActivityInfo;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
@@ -40,7 +40,6 @@ import com.onyx.android.sdk.ui.dialog.DialogGotoPage.AcceptNumberListener;
 import com.onyx.android.sdk.ui.dialog.DialogReaderMenu;
 import com.onyx.android.sdk.ui.dialog.DialogReaderMenu.FontSizeProperty;
 import com.onyx.android.sdk.ui.dialog.DialogReaderMenu.LineSpacingProperty;
-import com.onyx.android.sdk.ui.dialog.DialogReaderMenu.RotationScreenProperty;
 import com.onyx.android.sdk.ui.dialog.DialogReaderSettings;
 import com.onyx.android.sdk.ui.dialog.DialogScreenRefresh;
 import com.onyx.android.sdk.ui.dialog.DialogScreenRefresh.onScreenRefreshListener;
@@ -254,24 +253,23 @@ public class ShowDialogMenuAction extends FBAndroidAction
             }
 
             @Override
-            public void changeRotationScreen(RotationScreenProperty property)
+            public void changeRotationScreen(int orientation)
             {
-                if (property == RotationScreenProperty.rotation_0) {
-                    sDialogReaderMenu.dismiss();
-                    ZLApplication.Instance().runAction(ActionCode.SET_SCREEN_ORIENTATION_PORTRAIT);
+                String rotation = ActionCode.SET_SCREEN_ORIENTATION_PORTRAIT;
+                if (orientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+                    rotation = ActionCode.SET_SCREEN_ORIENTATION_LANDSCAPE;
                 }
-                else if (property == RotationScreenProperty.rotation_90) {
-                    sDialogReaderMenu.dismiss();
-                    ZLApplication.Instance().runAction(ActionCode.SET_SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+                else if (orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+                    rotation = ActionCode.SET_SCREEN_ORIENTATION_PORTRAIT;
                 }
-                else if (property == RotationScreenProperty.rotation_180) {
-                    sDialogReaderMenu.dismiss();
-                    ZLApplication.Instance().runAction(ActionCode.SET_SCREEN_ORIENTATION_REVERSE_PORTRAIT);
+                else if (orientation == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE) {
+                    rotation = ActionCode.SET_SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
                 }
-                else if (property == RotationScreenProperty.rotation_270) {
-                    sDialogReaderMenu.dismiss();
-                    ZLApplication.Instance().runAction(ActionCode.SET_SCREEN_ORIENTATION_LANDSCAPE);
+                else if (orientation == ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT) {
+                    rotation = ActionCode.SET_SCREEN_ORIENTATION_REVERSE_PORTRAIT;
                 }
+
+                ZLApplication.Instance().runAction(rotation);
             }
 
             @Override
@@ -480,7 +478,6 @@ public class ShowDialogMenuAction extends FBAndroidAction
         sDialogReaderMenu = new DialogReaderMenu(BaseActivity, menu_handler);
         sDialogReaderMenu.setCanceledOnTouchOutside(true);
         sDialogReaderMenu.show();
-
     }
 
     public static void updatePage(int current, int total) {
