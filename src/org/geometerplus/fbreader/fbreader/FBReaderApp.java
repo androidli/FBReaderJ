@@ -99,7 +99,7 @@ public final class FBReaderApp extends ZLApplication {
 	public final ZLIntegerRangeOption ScrollbarTypeOption =
 		new ZLIntegerRangeOption("Options", "ScrollbarType", 0, 3, FBView.SCROLLBAR_SHOW_AS_FOOTER);
 	public final ZLIntegerRangeOption FooterHeightOption =
-		new ZLIntegerRangeOption("Options", "FooterHeight", 1, 50, 8);
+		new ZLIntegerRangeOption("Options", "FooterHeight", 1, 50, 20);
 	public final ZLBooleanOption FooterShowTOCMarksOption =
 		new ZLBooleanOption("Options", "FooterShowTOCMarks", true);
 	public final ZLBooleanOption FooterShowClockOption =
@@ -136,7 +136,7 @@ public final class FBReaderApp extends ZLApplication {
 	public FBReaderApp() {
 		addAction(ActionCode.INCREASE_FONT, new ChangeFontSizeAction(this, +2));
 		addAction(ActionCode.DECREASE_FONT, new ChangeFontSizeAction(this, -2));
-		
+
 		addAction(ActionCode.INCREASE_LINESPACING, new ChangeLineSpacingAction(this, +1));
 		addAction(ActionCode.DECREASE_LINESPACING, new ChangeLineSpacingAction(this, -1));
 
@@ -171,18 +171,20 @@ public final class FBReaderApp extends ZLApplication {
 	public void openBook(final Book book, final Bookmark bookmark, final Runnable postAction) {
 		if (book != null || Model == null) {
 			runWithMessage("loadingBook", new Runnable() {
-				public void run() {
+				@Override
+                public void run() {
 					openBookInternal(book, bookmark, false);
 				}
 			}, postAction);
 		}
 	}
- 
+
 	public void reloadBook() {
 		if (Model != null && Model.Book != null) {
 			Model.Book.reloadInfoFromDatabase();
 			runWithMessage("loadingBook", new Runnable() {
-				public void run() {
+				@Override
+                public void run() {
 					openBookInternal(Model.Book, null, true);
 				}
 			}, null);
@@ -207,7 +209,8 @@ public final class FBReaderApp extends ZLApplication {
 		myColorProfile = null;
 	}
 
-	public ZLKeyBindings keyBindings() {
+	@Override
+    public ZLKeyBindings keyBindings() {
 		return myBindings;
 	}
 
@@ -376,7 +379,8 @@ public final class FBReaderApp extends ZLApplication {
 		openBook(createBookForFile(file), null, postAction);
 	}
 
-	public void onWindowClosing() {
+	@Override
+    public void onWindowClosing() {
 		storePosition();
 	}
 
@@ -409,7 +413,7 @@ public final class FBReaderApp extends ZLApplication {
 
 	private static class BookmarkDescription extends CancelActionDescription {
 		final Bookmark Bookmark;
-		
+
 		BookmarkDescription(Bookmark b) {
 			super(CancelActionType.returnTo, b.getText());
 			Bookmark = b;
@@ -541,7 +545,7 @@ public final class FBReaderApp extends ZLApplication {
 			return null;
 		}
 
-		int index = cursor.getParagraphIndex();	
+		int index = cursor.getParagraphIndex();
 		if (cursor.isEndOfParagraph()) {
 			++index;
 		}
