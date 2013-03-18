@@ -11,7 +11,7 @@ import org.geometerplus.zlibrary.core.application.ZLApplication;
 import org.geometerplus.zlibrary.text.model.ZLTextModel;
 import org.geometerplus.zlibrary.text.view.ZLTextView;
 
-import com.onyx.android.sdk.ui.data.TOCItem;
+import com.onyx.android.sdk.reader.TOCItem;
 import com.onyx.android.sdk.ui.dialog.DialogTOC;
 import com.onyx.android.sdk.ui.dialog.DialogTOC.onGoToPageListener;
 
