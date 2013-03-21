@@ -521,6 +521,24 @@ public class ZLAndroidWidget extends View implements ZLViewWidget, View.OnLongCl
 
 	@Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
+		
+		if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
+			 FBReaderApp fbreader = (FBReaderApp)FBReaderApp.Instance();
+		        Bookmark bookmarkAdd = fbreader.addBookmark(20, true);
+		        if (bookmarkAdd != null) {
+		        	Log.d(TAG, "Library.Instance().allBookmarks()="+Library.Instance().allBookmarks().size());
+		            for (Bookmark bookmark : Library.Instance().allBookmarks()) {
+		                if (bookmark.getText().equals(bookmarkAdd.getText())) {
+		                    bookmark.delete();
+		                    ZLAndroidWidget.this.invalidate();
+		                    return true;
+		                }
+		            }
+		        }
+		        ZLApplication.Instance().runAction(ActionCode.ADD_BOOKMARK);
+		        ZLAndroidWidget.this.invalidate();
+		}
+		
 		if (myKeyUnderTracking != -1) {
 			if (myKeyUnderTracking == keyCode) {
 				final boolean longPress = System.currentTimeMillis() >
