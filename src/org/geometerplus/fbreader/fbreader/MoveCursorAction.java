@@ -19,6 +19,7 @@
 
 package org.geometerplus.fbreader.fbreader;
 
+import org.geometerplus.zlibrary.core.application.ZLApplication;
 import org.geometerplus.zlibrary.text.view.ZLTextRegion;
 import org.geometerplus.zlibrary.text.view.ZLTextWordRegionSoul;
 
@@ -43,11 +44,11 @@ class MoveCursorAction extends FBAction {
 			fbView.selectRegion(region);
 		} else {
 			switch (myDirection) {
-				case down:
-					fbView.scrollPage(true, FBView.ScrollingMode.SCROLL_LINES, 1);
+				case leftToRight:
+					ZLApplication.Instance().runAction(ActionCode.TURN_PAGE_FORWARD);
 					break;
-				case up:
-					fbView.scrollPage(false, FBView.ScrollingMode.SCROLL_LINES, 1);
+				case rightToLeft:
+					ZLApplication.Instance().runAction(ActionCode.TURN_PAGE_BACK);
 					break;
 			}
 		}
