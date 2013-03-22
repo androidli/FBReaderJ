@@ -52,7 +52,7 @@ public class ZLAndroidWidget extends View implements ZLViewWidget, View.OnLongCl
 	private Bitmap myFooterBitmap;
 
 	private Bitmap mBookmarkBitmap;
-
+	
 	public ZLAndroidWidget(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		init();
@@ -134,7 +134,6 @@ public class ZLAndroidWidget extends View implements ZLViewWidget, View.OnLongCl
 
 	private void onDrawInScrolling(Canvas canvas) {
 		final ZLView view = ZLApplication.Instance().getCurrentView();
-
 //		final int w = getWidth();
 //		final int h = getMainAreaHeight();
 
@@ -492,11 +491,15 @@ public class ZLAndroidWidget extends View implements ZLViewWidget, View.OnLongCl
 		final ZLApplication application = ZLApplication.Instance();
 
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
-		    final FBReaderApp fbreader = (FBReaderApp)FBReaderApp.Instance();
-		    if (!fbreader.getTextView().isSelectionEmpty()) {
-		        fbreader.getTextView().clearSelection();
-		        return true;
-		    }
+			final FBReaderApp fbreader = (FBReaderApp) FBReaderApp.Instance();
+			if (!fbreader.getTextView().isSelectionEmpty()) {
+				fbreader.getTextView().clearSelection();
+				return true;
+			}
+		} else if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+			ZLApplication.Instance().runAction(ActionCode.INCREASE_FONT);
+		} else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+			ZLApplication.Instance().runAction(ActionCode.DECREASE_FONT);
 		}
 		if (application.hasActionForKey(keyCode, true) ||
 			application.hasActionForKey(keyCode, false)) {
