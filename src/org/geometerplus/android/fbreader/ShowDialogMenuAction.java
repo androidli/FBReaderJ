@@ -465,6 +465,11 @@ public class ShowDialogMenuAction extends FBAndroidAction
                 sDialogReaderMenu.setTtsState(false);
 
             }
+
+            @Override
+            public boolean canChangeFontFace() {
+            	return true;
+            }
         };
 
         sDialogReaderMenu = new DialogReaderMenu(BaseActivity, menu_handler);
