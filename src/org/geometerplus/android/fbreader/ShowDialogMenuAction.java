@@ -174,7 +174,7 @@ public class ShowDialogMenuAction extends FBAndroidAction
             }
 
             @Override
-            public void dictionary()
+            public void startDictionary()
             {
                 ZLApplication.Instance().runAction(ActionCode.DICTIONARY);
             }
