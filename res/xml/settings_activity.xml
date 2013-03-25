@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="@string/reader_setting" >
+
+    <ListPreference
+        android:key="page_margin"
+        android:layout="@layout/my_custom_preference_item"
+        android:summary="@string/settings_set_page_margin"
+        android:title="@string/settings_page_margin"
+        android:defaultValue="10" />
+    <PreferenceCategory
+        android:key="dictionary"
+        android:title="@string/menu_item_dictionary">
+        <ListPreference
+            android:key="dictionary_list"
+            android:summary="@string/settings_set_dictionary"
+            android:layout="@layout/my_custom_preference_item"
+            android:title="@string/settings_set_dictionary_title"/>
+    </PreferenceCategory>
+</PreferenceScreen>

@@ -32,6 +32,7 @@ public interface ActionCode {
 
 	String SHARE_BOOK = "shareBook";
 
+	String DICTIONARY = "dictionary";
 	String SEARCH = "search";
 	String FIND_PREVIOUS = "findPrevious";
 	String FIND_NEXT = "findNext";

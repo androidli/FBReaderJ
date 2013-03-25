@@ -25,6 +25,7 @@ import org.geometerplus.zlibrary.text.view.style.ZLTextStyleCollection;
 import org.geometerplus.zlibrary.ui.android.library.ZLAndroidLibrary;
 import org.geometerplus.zlibrary.ui.android.view.AndroidFontUtil;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
@@ -40,7 +41,6 @@ import com.onyx.android.sdk.ui.dialog.DialogGotoPage.AcceptNumberListener;
 import com.onyx.android.sdk.ui.dialog.DialogReaderMenu;
 import com.onyx.android.sdk.ui.dialog.DialogReaderMenu.FontSizeProperty;
 import com.onyx.android.sdk.ui.dialog.DialogReaderMenu.LineSpacingProperty;
-import com.onyx.android.sdk.ui.dialog.DialogReaderSettings;
 import com.onyx.android.sdk.ui.dialog.DialogScreenRefresh;
 import com.onyx.android.sdk.ui.dialog.DialogScreenRefresh.onScreenRefreshListener;
 /**
@@ -173,6 +173,12 @@ public class ShowDialogMenuAction extends FBAndroidAction
                 });
             }
 
+            @Override
+            public void dictionary()
+            {
+                ZLApplication.Instance().runAction(ActionCode.DICTIONARY);
+            }
+            
             @Override
             public void searchContent()
             {
@@ -424,22 +430,8 @@ public class ShowDialogMenuAction extends FBAndroidAction
             @Override
             public void showReaderSettings()
             {
-                final FBReaderApp fbreader = (FBReaderApp)FBReaderApp.Instance();
-                DialogReaderSettings dlg = new DialogReaderSettings(mFbReader, fbreader.AllFrameMarginsOption.getValue());
-                dlg.setOnPageMarginsListener(new DialogReaderSettings.onPageMarginsListener()
-                {
-
-                    @Override
-                    public int onSetPageMargins(int margin)
-                    {
-                        fbreader.setAllFrameMarginsOptionValue(margin);
-                        fbreader.clearTextCaches();
-                        fbreader.getViewWidget().repaint();
-
-                        return fbreader.AllFrameMarginsOption.getValue();
-                    }
-                });
-                dlg.show();
+            	 Intent intent = new Intent(mFbReader, ReaderSettingsActivity.class);
+            	 mFbReader.startActivity(intent);
             }
 
             @Override

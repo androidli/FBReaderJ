@@ -13,4 +13,8 @@
     <string name="language_is_not_set">Book language is not set. Trying to read book in %0.</string>
     <string formatted="false" name="no_data_for_language">Text-to-speech data for %0 are not installed. Trying to read book in %1.</string>
     <string name="speed">Rate:</string>
+    <string name="settings_page_margin">Page margin</string>
+    <string name="settings_set_page_margin">Set the page margin</string>
+    <string name="settings_set_dictionary">Set dictionary</string>
+    <string name="settings_set_dictionary_title">Dictionary</string>
 </resources>

@@ -117,6 +117,7 @@
 			<meta-data android:name="android.app.searchable" android:resource="@xml/searchable"/>
 		</activity>
 		<activity android:name="org.geometerplus.android.fbreader.BookmarkEditActivity" android:theme="@android:style/Theme.Dialog" android:configChanges="orientation|keyboardHidden"/>
+		<activity android:name="org.geometerplus.android.fbreader.ReaderSettingsActivity" android:configChanges="orientation|keyboardHidden"/>
 		<activity android:name="org.geometerplus.android.fbreader.preferences.PreferenceActivity" android:configChanges="orientation|keyboardHidden"/>
 		<activity android:name="org.geometerplus.android.fbreader.preferences.EditBookInfoActivity" android:process=":library" android:configChanges="orientation|keyboardHidden"/>
 		<activity android:name="org.geometerplus.android.fbreader.network.BookDownloader" android:process=":networkLibrary" android:theme="@android:style/Theme.NoDisplay">
