@@ -14,19 +14,14 @@ public class ReaderSettingsActivity extends PreferenceActivity
     public static final String[] sPageMarginsArray = new String[]{"0", "10", "20", "30"};
 
     public static final String sPageMargin = "page_margin";
-    public static final String sDisplayFooter = "display_footer";
-    public static final String sDisplayTime = "display_time";
-    public static final String sDisplayNavigational = "display_navigational";
     public static final String sDictionaryList = "dictionary_list";
 
-    public static final boolean sIsShowTime = true;
-    public static final boolean sIsShowFooter = true;
-    public static final boolean sIsShowNavigational = true;
     public static String sDictValue = null;
     public static final String sPageMageinsDefaultValue = sPageMarginsArray[1];
     private OnyxDictionaryInfo[] mDicts = null;
     private String[] mDictEntries = null;
     private String[] mDictEntryValues = null;
+    private ListPreference mDictList = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -38,21 +33,24 @@ public class ReaderSettingsActivity extends PreferenceActivity
         list.setEntries(sPageMarginsArray);
         list.setEntryValues(sPageMarginsArray);
 
-        mDicts = OnyxDictionaryInfo.getDictionaryList();
+        mDicts = OnyxSysCenter.getDictionaryList();
         mDictEntries = new String[mDicts.length];
         mDictEntryValues = new String[mDicts.length];
         for (int i = 0; i < mDictEntries.length; i++) {
             mDictEntries[i] = mDicts[i].id;
             mDictEntryValues[i] = mDicts[i].packageName;
         }
-        ListPreference dictList = (ListPreference) findPreference(sDictionaryList);
-        dictList.setEntries(mDictEntries);
-        dictList.setEntryValues(mDictEntryValues);
-        if (dictList.getValue() == null) {
-        	dictList.setValueIndex(getValueIndex(OnyxSysCenter.getDictionary().packageName));
-        }
+        mDictList = (ListPreference) findPreference(sDictionaryList);
+        mDictList.setEntries(mDictEntries);
+        mDictList.setEntryValues(mDictEntryValues);
     }
 
+    @Override
+    protected void onResume() {
+    	super.onResume();
+    	mDictList.setValueIndex(getValueIndex(OnyxSysCenter.getDictionary().packageName));
+    }
+    
     @Override
     protected void onStop() {
     	super.onStop();

@@ -37,6 +37,9 @@ import org.geometerplus.zlibrary.text.view.ZLTextRegion;
 import org.geometerplus.zlibrary.text.view.ZLTextWord;
 import org.geometerplus.zlibrary.ui.android.R;
 
+import com.onyx.android.sdk.data.sys.OnyxDictionaryInfo;
+import com.onyx.android.sdk.data.sys.OnyxSysCenter;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
@@ -259,13 +262,12 @@ public abstract class DictionaryUtil {
 			text = text.substring(start, end);
 		}
 
-		final PackageInfo info = getCurrentDictionaryInfo(singleWord);
-		final Intent intent = getDictionaryIntent(info, text);
+		final OnyxDictionaryInfo info = OnyxSysCenter.getDictionary();
+		final Intent intent = new Intent(info.action).setComponent(new ComponentName(info.packageName, info.className));
 
 		try {
-		    if ("QuickDic".equals(info.Id)) {
-		        activity.startActivity(intent);
-		    }
+			intent.putExtra(info.dataKey, text);
+			activity.startActivity(intent);
 		} catch (ActivityNotFoundException e) {
 		    Toast.makeText(activity, R.string.did_not_find_the_dictionary, Toast.LENGTH_LONG).show();
 		}
