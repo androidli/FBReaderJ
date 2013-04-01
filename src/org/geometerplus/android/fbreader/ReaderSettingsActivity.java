@@ -7,6 +7,7 @@ import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
 
 import com.onyx.android.sdk.data.sys.OnyxDictionaryInfo;
+import com.onyx.android.sdk.data.sys.OnyxSysCenter;
 
 public class ReaderSettingsActivity extends PreferenceActivity
 {
@@ -24,6 +25,8 @@ public class ReaderSettingsActivity extends PreferenceActivity
     public static String sDictValue = null;
     public static final String sPageMageinsDefaultValue = sPageMarginsArray[1];
     private OnyxDictionaryInfo[] mDicts = null;
+    private String[] mDictEntries = null;
+    private String[] mDictEntryValues = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -36,19 +39,39 @@ public class ReaderSettingsActivity extends PreferenceActivity
         list.setEntryValues(sPageMarginsArray);
 
         mDicts = OnyxDictionaryInfo.getDictionaryList();
-        String[] dictEntries = new String[4];
-        String[] dictEntryValues = new String[4];
-        for (int i = 0; i < dictEntries.length; i++) {
-            dictEntries[i] = mDicts[i].id;
-            dictEntryValues[i] = mDicts[i].packageName;
+        mDictEntries = new String[mDicts.length];
+        mDictEntryValues = new String[mDicts.length];
+        for (int i = 0; i < mDictEntries.length; i++) {
+            mDictEntries[i] = mDicts[i].id;
+            mDictEntryValues[i] = mDicts[i].packageName;
         }
         ListPreference dictList = (ListPreference) findPreference(sDictionaryList);
-        dictList.setEntries(dictEntries);
-        dictList.setEntryValues(dictEntryValues);
+        dictList.setEntries(mDictEntries);
+        dictList.setEntryValues(mDictEntryValues);
         if (dictList.getValue() == null) {
-            dictList.setValueIndex(0);
+        	dictList.setValueIndex(getValueIndex(OnyxSysCenter.getDictionary().packageName));
         }
     }
+
+    @Override
+    protected void onStop() {
+    	super.onStop();
+    	ListPreference dictList = (ListPreference) findPreference(sDictionaryList);
+    	System.out.println(dictList.getValue());
+    	if (dictList.getValue() != null) {
+    		OnyxSysCenter.setDictionary(this, OnyxDictionaryInfo.findDict(mDictEntries[getValueIndex(dictList.getValue())]));
+        }
+    }
+    
+	private int getValueIndex(String value) {
+		int len = mDictEntryValues.length;
+		for (int i = 0; i < len; i++) {
+			if (value.equals(mDictEntryValues[i])) {
+				return i;
+			}
+		}
+		return 0;
+	}
 
     public static void setDictValue(String value)
     {
