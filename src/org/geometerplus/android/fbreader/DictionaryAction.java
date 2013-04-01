@@ -19,7 +19,6 @@
 
 package org.geometerplus.android.fbreader;
 
-import org.geometerplus.android.fbreader.ReaderSettingsActivity.DictionaryInfo;
 import org.geometerplus.fbreader.fbreader.FBReaderApp;
 import org.geometerplus.zlibrary.ui.android.R;
 
@@ -30,6 +29,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 
+import com.onyx.android.sdk.data.sys.OnyxDictionaryInfo;
+
 class DictionaryAction extends FBAndroidAction {
 	DictionaryAction(FBReader baseActivity, FBReaderApp fbreader) {
 		super(baseActivity, fbreader);
@@ -38,12 +39,12 @@ class DictionaryAction extends FBAndroidAction {
 	@Override
 	protected void run(Object ... params) {
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(BaseActivity);
-        String value = preferences.getString(ReaderSettingsActivity.sDictionaryList, ReaderSettingsActivity.getDictionaryList()[0].packageName);
-        DictionaryInfo info = null;
-        int length = ReaderSettingsActivity.getDictionaryList().length;
+        String value = preferences.getString(ReaderSettingsActivity.sDictionaryList, OnyxDictionaryInfo.getDictionaryList()[0].packageName);
+        OnyxDictionaryInfo info = null;
+        int length = OnyxDictionaryInfo.getDictionaryList().length;
         for (int i = 0; i < length; i++) {
-            if (value.equals(ReaderSettingsActivity.getDictionaryList()[i].packageName)) {
-                info = ReaderSettingsActivity.getDictionaryList()[i];
+            if (value.equals(OnyxDictionaryInfo.getDictionaryList()[i].packageName)) {
+                info = OnyxDictionaryInfo.getDictionaryList()[i];
                 break;
             }
         }
