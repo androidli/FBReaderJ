@@ -433,6 +433,13 @@ public class ShowDialogMenuAction extends FBAndroidAction
             	 Intent intent = new Intent(mFbReader, ReaderSettingsActivity.class);
             	 mFbReader.startActivity(intent);
             }
+            
+            @Override
+            public boolean ttsIsSpeaking()
+            {
+                // TODO Auto-generated method stub
+                return false;
+            }
 
             @Override
             public void ttsInit() {
