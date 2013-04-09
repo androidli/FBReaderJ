@@ -19,15 +19,17 @@
 
 package org.geometerplus.android.fbreader;
 
-import android.content.Intent;
-
 import org.geometerplus.zlibrary.ui.android.library.ZLAndroidApplication;
-import org.geometerplus.android.fbreader.libraryService.LibraryService;
+
+import com.onyx.android.sdk.data.sys.OnyxSysCenter;
 
 public class FBReaderApplication extends ZLAndroidApplication {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		
+		OnyxSysCenter.init(this);
+		
 		//bindService(new Intent(this, LibraryService.class), null, LibraryService.BIND_AUTO_CREATE);
 	}
 }
