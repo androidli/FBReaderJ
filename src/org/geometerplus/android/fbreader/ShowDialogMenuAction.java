@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.geometerplus.android.fbreader.api.ApiException;
+import org.geometerplus.android.fbreader.api.TextPosition;
 import org.geometerplus.android.util.UIUtil;
 import org.geometerplus.fbreader.bookmodel.TOCTree;
 import org.geometerplus.fbreader.fbreader.ActionCode;
@@ -18,8 +20,12 @@ import org.geometerplus.fbreader.library.Library;
 import org.geometerplus.zlibrary.core.application.ZLApplication;
 import org.geometerplus.zlibrary.core.options.ZLIntegerRangeOption;
 import org.geometerplus.zlibrary.text.model.ZLTextModel;
+import org.geometerplus.zlibrary.text.view.ZLTextElement;
+import org.geometerplus.zlibrary.text.view.ZLTextFixedPosition;
 import org.geometerplus.zlibrary.text.view.ZLTextView;
 import org.geometerplus.zlibrary.text.view.ZLTextView.PagePosition;
+import org.geometerplus.zlibrary.text.view.ZLTextWord;
+import org.geometerplus.zlibrary.text.view.ZLTextWordCursor;
 import org.geometerplus.zlibrary.text.view.style.ZLTextBaseStyle;
 import org.geometerplus.zlibrary.text.view.style.ZLTextStyleCollection;
 import org.geometerplus.zlibrary.ui.android.library.ZLAndroidLibrary;
@@ -30,6 +36,7 @@ import android.content.pm.ActivityInfo;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
+import com.onyx.android.sdk.tts.OnyxTtsSpeaker;
 import com.onyx.android.sdk.ui.data.DirectoryItem;
 import com.onyx.android.sdk.ui.dialog.AnnotationItem;
 import com.onyx.android.sdk.ui.dialog.DialogDirectory;
@@ -55,7 +62,10 @@ public class ShowDialogMenuAction extends FBAndroidAction
 
     private static DialogReaderMenu sDialogReaderMenu;
     private FBReader mFbReader = null;
-    private Speaker mSpeaker = null;
+    private OnyxTtsSpeaker mTtsSpeaker = null;
+    
+    private int myParagraphIndex = -1;
+    private int myParagraphsNumber = 0;
 
     ShowDialogMenuAction(FBReader baseActivity, FBReaderApp fbreader)
     {
@@ -433,37 +443,66 @@ public class ShowDialogMenuAction extends FBAndroidAction
             	 Intent intent = new Intent(mFbReader, ReaderSettingsActivity.class);
             	 mFbReader.startActivity(intent);
             }
+            
+            @Override
+            public boolean ttsIsSpeaking()
+            {
+                if (mTtsSpeaker == null) {
+                    return false;
+                }
+                
+                return mTtsSpeaker.isSpeaking() && !mTtsSpeaker.isPaused();
+            }
 
             @Override
             public void ttsInit() {
-                if (mSpeaker == null) {
-                    mSpeaker = new Speaker(mFbReader);
+                if (mTtsSpeaker == null) {
+                    mTtsSpeaker = new OnyxTtsSpeaker(mFbReader);
+                    mTtsSpeaker.setOnSpeakerCompletionListener(new OnyxTtsSpeaker.OnSpeakerCompletionListener()
+                    {
+                        
+                        @Override
+                        public void onSpeakerCompletion()
+                        {
+                            ++myParagraphIndex;
+                            if (mTtsSpeaker.isActive()) {
+                                if (!isPageEndOfText()) {
+                                    mTtsSpeaker.startTts(gotoNextParagraph());
+                                }
+                                else {
+                                    mTtsSpeaker.stop();
+                                }
+                            }
+                        }
+                    });
                 }
+                
 
             }
 
             @Override
             public void ttsSpeak() {
-                if(!mSpeaker.isSpeaking()) {
-                    mSpeaker.play();
-                    sDialogReaderMenu.setTtsState(true);
-                } else {
-                    mSpeaker.stopTalking();
-                    sDialogReaderMenu.setTtsState(false);
+                if(!mTtsSpeaker.isSpeaking()) {
+                    mTtsSpeaker.stop();
+                    
+                    myParagraphIndex = ShowDialogMenuAction.this.Reader.getTextView().getStartCursor().getParagraphIndex();
+                    myParagraphsNumber = ShowDialogMenuAction.this.Reader.Model.getTextModel().getParagraphsNumber();
+                    mTtsSpeaker.startTts(gotoNextParagraph());
+                } 
+                else {
+                    mTtsSpeaker.resume();
                 }
             }
 
             @Override
             public void ttsPause() {
-                mSpeaker.stop();
+                mTtsSpeaker.pause();
             }
 
             @Override
             public void ttsStop() {
-                mSpeaker.stop();
-                mSpeaker.clearHighlighting();
-                sDialogReaderMenu.setTtsState(false);
-
+                mTtsSpeaker.stop();
+                clearHighlighting();
             }
 
             @Override
@@ -557,5 +596,82 @@ public class ShowDialogMenuAction extends FBAndroidAction
 
         DialogDirectory dialogDirectory = new DialogDirectory(BaseActivity, TOCItems, bookmarks, annotationItems, gotoPageHandler, tab);
         dialogDirectory.show();
+    }
+
+    private ZLTextFixedPosition getZLTextPosition(TextPosition position) {
+        return new ZLTextFixedPosition(
+            position.ParagraphIndex,
+            position.ElementIndex,
+            position.CharIndex
+        );
+    }
+    
+    public void highlightArea(TextPosition start, TextPosition end) {
+        this.Reader.getTextView().highlight(
+            getZLTextPosition(start),
+            getZLTextPosition(end)
+        );
+    }
+    
+    public void clearHighlighting() {
+        this.Reader.getTextView().clearHighlighting();
+    }
+    
+    public void highlightParagraph() throws ApiException {
+        if (0 <= myParagraphIndex && myParagraphIndex < myParagraphsNumber) {
+            highlightArea(
+                new TextPosition(myParagraphIndex, 0, 0),
+                new TextPosition(myParagraphIndex, Integer.MAX_VALUE, 0)
+            );
+        } else {
+            clearHighlighting();
+        }
+    }
+    
+    public String getParagraphText(int paragraphIndex) {
+        final StringBuffer sb = new StringBuffer();
+        final ZLTextWordCursor cursor = new ZLTextWordCursor(this.Reader.getTextView().getStartCursor());
+        cursor.moveToParagraph(paragraphIndex);
+        cursor.moveToParagraphStart();
+        while (!cursor.isEndOfParagraph()) {
+            ZLTextElement element = cursor.getElement();
+            if (element instanceof ZLTextWord) {
+                sb.append(element.toString() + " ");
+            }
+            cursor.nextWord();
+        }
+        return sb.toString();
+    }
+    
+    public boolean isPageEndOfText() {
+        final ZLTextWordCursor cursor = this.Reader.getTextView().getEndCursor();
+        return cursor.isEndOfParagraph() && cursor.getParagraphCursor().isLast();
+    }
+    
+    public void setPageStart(TextPosition position) {
+        this.Reader.getTextView().gotoPosition(position.ParagraphIndex, position.ElementIndex, position.CharIndex);
+        this.Reader.getViewWidget().repaint();
+        this.Reader.storePosition();
+    }
+    
+    public String gotoNextParagraph() {
+        String text = "";
+        for (; myParagraphIndex < myParagraphsNumber; ++myParagraphIndex) {
+            final String s = getParagraphText(myParagraphIndex);
+            if (s.length() > 0) {
+                text = s;
+                break;
+            }
+        }
+        if (!"".equals(text) && !isPageEndOfText()) {
+            setPageStart(new TextPosition(myParagraphIndex, 0, 0));
+        }
+            try {
+                highlightParagraph();
+            } catch (ApiException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        return text;
     }
 }
