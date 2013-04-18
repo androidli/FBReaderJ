@@ -61,8 +61,9 @@ public class ShowDialogMenuAction extends FBAndroidAction
     private ZLTextBaseStyle mBaseStyle = null;
 
     private static DialogReaderMenu sDialogReaderMenu;
+    private static OnyxTtsSpeaker sTtsSpeaker = null;
+    
     private FBReader mFbReader = null;
-    private OnyxTtsSpeaker mTtsSpeaker = null;
     
     private int myParagraphIndex = -1;
     private int myParagraphsNumber = 0;
@@ -81,7 +82,6 @@ public class ShowDialogMenuAction extends FBAndroidAction
     {
         final ZLTextStyleCollection collection = ZLTextStyleCollection.Instance();
         mBaseStyle = collection.getBaseStyle();
-
 
         DialogReaderMenu.IMenuHandler menu_handler = new DialogReaderMenu.IMenuHandler()
         {
@@ -447,30 +447,30 @@ public class ShowDialogMenuAction extends FBAndroidAction
             @Override
             public boolean ttsIsSpeaking()
             {
-                if (mTtsSpeaker == null) {
+                if (sTtsSpeaker == null) {
                     return false;
                 }
                 
-                return mTtsSpeaker.isSpeaking() && !mTtsSpeaker.isPaused();
+                return sTtsSpeaker.isActive() && !sTtsSpeaker.isPaused();
             }
 
             @Override
             public void ttsInit() {
-                if (mTtsSpeaker == null) {
-                    mTtsSpeaker = new OnyxTtsSpeaker(mFbReader);
-                    mTtsSpeaker.setOnSpeakerCompletionListener(new OnyxTtsSpeaker.OnSpeakerCompletionListener()
+                if (sTtsSpeaker == null) {
+                    sTtsSpeaker = new OnyxTtsSpeaker(mFbReader);
+                    sTtsSpeaker.setOnSpeakerCompletionListener(new OnyxTtsSpeaker.OnSpeakerCompletionListener()
                     {
                         
                         @Override
                         public void onSpeakerCompletion()
                         {
                             ++myParagraphIndex;
-                            if (mTtsSpeaker.isActive()) {
+                            if (sTtsSpeaker.isActive()) {
                                 if (!isPageEndOfText()) {
-                                    mTtsSpeaker.startTts(gotoNextParagraph());
+                                    sTtsSpeaker.startTts(gotoNextParagraph());
                                 }
                                 else {
-                                    mTtsSpeaker.stop();
+                                    sTtsSpeaker.stop();
                                 }
                             }
                         }
@@ -482,26 +482,32 @@ public class ShowDialogMenuAction extends FBAndroidAction
 
             @Override
             public void ttsSpeak() {
-                if(!mTtsSpeaker.isSpeaking()) {
-                    mTtsSpeaker.stop();
-                    
-                    myParagraphIndex = ShowDialogMenuAction.this.Reader.getTextView().getStartCursor().getParagraphIndex();
-                    myParagraphsNumber = ShowDialogMenuAction.this.Reader.Model.getTextModel().getParagraphsNumber();
-                    mTtsSpeaker.startTts(gotoNextParagraph());
+                assert(sTtsSpeaker != null);
+                
+                if (sTtsSpeaker.isPaused()) {
+                    sTtsSpeaker.resume();
                 } 
                 else {
-                    mTtsSpeaker.resume();
+                    sTtsSpeaker.stop();
+
+                    myParagraphIndex = ShowDialogMenuAction.this.Reader.getTextView().getStartCursor().getParagraphIndex();
+                    myParagraphsNumber = ShowDialogMenuAction.this.Reader.Model.getTextModel().getParagraphsNumber();
+                    sTtsSpeaker.startTts(gotoNextParagraph());
                 }
             }
 
             @Override
             public void ttsPause() {
-                mTtsSpeaker.pause();
+                assert(sTtsSpeaker != null);
+                
+                sTtsSpeaker.pause();
             }
 
             @Override
             public void ttsStop() {
-                mTtsSpeaker.stop();
+                assert(sTtsSpeaker != null);
+                
+                sTtsSpeaker.stop();
                 clearHighlighting();
             }
 
@@ -520,6 +526,17 @@ public class ShowDialogMenuAction extends FBAndroidAction
         if (sDialogReaderMenu != null) {
             sDialogReaderMenu.setPageIndex(current);
             sDialogReaderMenu.setPageCount(total);
+        }
+    }
+    
+    /**
+     * TODO ugly hacking for stop TTS
+     */
+    public static void shutdownTts()
+    {
+        if (sTtsSpeaker != null) {
+            sTtsSpeaker.shutdown();
+            sTtsSpeaker = null;
         }
     }
 

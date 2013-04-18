@@ -379,6 +379,14 @@ public final class FBReader extends ZLAndroidActivity {
 		PopupPanel.removeAllWindows(FBReaderApp.Instance(), this);
 		super.onStop();
 	}
+	
+	@Override
+	protected void onDestroy()
+	{
+	    ShowDialogMenuAction.shutdownTts();
+	    
+	    super.onDestroy();
+	}
 
 	@Override
 	protected FBReaderApp createApplication() {
