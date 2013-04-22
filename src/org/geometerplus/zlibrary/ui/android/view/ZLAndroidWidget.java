@@ -498,8 +498,10 @@ public class ZLAndroidWidget extends View implements ZLViewWidget, View.OnLongCl
 			}
 		} else if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
 			ZLApplication.Instance().runAction(ActionCode.INCREASE_FONT);
+			return true;
 		} else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
 			ZLApplication.Instance().runAction(ActionCode.DECREASE_FONT);
+			return true;
 		}
 		if (application.hasActionForKey(keyCode, true) ||
 			application.hasActionForKey(keyCode, false)) {
