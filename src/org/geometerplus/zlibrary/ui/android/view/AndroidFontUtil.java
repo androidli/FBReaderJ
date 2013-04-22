@@ -42,8 +42,9 @@ public final class AndroidFontUtil {
 		ourTimeStamp = timeStamp;
 		if (ourFileSet == null || forceReload) {
 			final HashSet<File> fileSet = new HashSet<File>();
-			final FilenameFilter filter = new FilenameFilter() {
-				public boolean accept(File dir, String name) {
+			final FilenameFilter filter1 = new FilenameFilter() {
+				@Override
+                public boolean accept(File dir, String name) {
 					if (name.startsWith(".")) {
 						return false;
 					}
@@ -51,9 +52,29 @@ public final class AndroidFontUtil {
 					return lcName.endsWith(".ttf") || lcName.endsWith(".otf");
 				}
 			};
-			final File[] fileList = new File(Paths.FontsDirectoryOption().getValue()).listFiles(filter);
-			if (fileList != null) {
-				fileSet.addAll(Arrays.asList(fileList));
+
+			final FilenameFilter filter2 = new FilenameFilter()
+            {
+
+                @Override
+                public boolean accept(File dir, String filename)
+                {
+                    if((filename.indexOf("Clockopia") != -1) || (filename.indexOf("Droid") != -1)) {
+                        return false;
+                    }
+
+                    final String lcName = filename.toLowerCase();
+                    return lcName.endsWith(".ttf") || lcName.endsWith(".otf");
+                }
+            };
+
+			final File[] fileList1 = new File(Paths.FontsDirectoryOption().getValue()).listFiles(filter1);
+			final File[] fileList2 = new File(Paths.SystemFontDirectoryOption().getValue()).listFiles(filter2);
+			if (fileList1 != null) {
+				fileSet.addAll(Arrays.asList(fileList1));
+			}
+			if(fileList2 != null) {
+			    fileSet.addAll(Arrays.asList(fileList2));
 			}
 			if (!fileSet.equals(ourFileSet)) {
 				ourFileSet = fileSet;
