@@ -38,9 +38,9 @@ import org.geometerplus.zlibrary.ui.android.library.ZLAndroidLibrary;
 
 import android.content.Context;
 
+import com.onyx.android.sdk.data.cms.OnyxBookProgress;
 import com.onyx.android.sdk.data.cms.OnyxCmsCenter;
 import com.onyx.android.sdk.data.cms.OnyxMetadata;
-import com.onyx.android.sdk.data.cms.OnyxMetadata.BookProgress;
 
 public abstract class ZLTextView extends ZLTextViewBase {
 	public static final int MAX_SELECTION_DISTANCE = 10;
@@ -478,13 +478,13 @@ public abstract class ZLTextView extends ZLTextViewBase {
 	    if (fbReader.Model != null && fbReader.Model.Book != null && fbReader.Model.Book.File != null) {            
 	        OnyxMetadata metadata = OnyxCmsCenter.getMetadata(ctx, fbReader.Model.Book.File.getPath());
 	        if (metadata != null) {
-	            BookProgress progress = new BookProgress(fbReader.getTextView().pagePosition().Current, fbReader.getTextView().pagePosition().Total);
+	            OnyxBookProgress progress = new OnyxBookProgress(fbReader.getTextView().pagePosition().Current, fbReader.getTextView().pagePosition().Total);
 	            metadata.setProgress(progress);
 	            OnyxCmsCenter.updateMetadata(ctx, metadata);
 	        }
 	        else {
 	            metadata = OnyxMetadata.createFromFile(fbReader.Model.Book.File.getPath());
-	            BookProgress progress = new BookProgress(fbReader.getTextView().pagePosition().Current, fbReader.getTextView().pagePosition().Total);
+	            OnyxBookProgress progress = new OnyxBookProgress(fbReader.getTextView().pagePosition().Current, fbReader.getTextView().pagePosition().Total);
 	            metadata.setProgress(progress);
 	            OnyxCmsCenter.insertMetadata(ctx, metadata);
 	        }
