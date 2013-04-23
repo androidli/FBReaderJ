@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<resources>
+    <string name="empty_string"/>
+    <string name="slash">/</string>
+    <string name="hint"/>
+    <string name="did_not_find_the_dictionary">Директория не найдена</string>
+    <string name="title">TTS-плагин для FBReader</string>
+    <string name="initializing">Инициализация…</string>
+    <string name="failure">Инициализация не удалась</string>
+    <string name="speak_menu_item">Читать</string>
+    <string name="no_tts_installed">Подключить TTS engine не удалось</string>
+    <string name="initialization_error">Получить сведения о книге с помощью FBReader не удалось</string>
+    <string name="language_is_not_set">Язык книги не установлен. Попытка прочесть на языке %0</string>
+    <string formatted="false" name="no_data_for_language">TTS для языка %0 не установлен. Попытка прочесть на языке: </string>
+    <string name="speed">Рейтинг:</string>
+    <string name="settings_page_margin">Поля страницы</string>
+    <string name="settings_set_page_margin">Установить поля страницы</string>
+    <string name="settings_set_dictionary">Установить словарь</string>
+    <string name="settings_set_dictionary_title">Словарь</string>
+</resources>
