@@ -80,6 +80,11 @@ public final class ZLKeyBindings {
 			bindKey(KeyEvent.KEYCODE_VOLUME_UP, false, ActionCode.VOLUME_KEY_SCROLL_FORWARD);
 			bindKey(KeyEvent.KEYCODE_VOLUME_DOWN, false, ActionCode.VOLUME_KEY_SCROLL_BACK);
 		}
+		
+		// added by joy@onyx
+		bindKey(KeyEvent.KEYCODE_PAGE_UP, false, ActionCode.VOLUME_KEY_SCROLL_FORWARD);
+		bindKey(KeyEvent.KEYCODE_PAGE_DOWN, false, ActionCode.VOLUME_KEY_SCROLL_BACK);
+		
 		volumeKeysOption.setValue(true);
 		invertVolumeKeysOption.setValue(false);
 		// end of migration code
