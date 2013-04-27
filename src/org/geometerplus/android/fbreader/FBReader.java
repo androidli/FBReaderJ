@@ -128,6 +128,9 @@ public final class FBReader extends ZLAndroidActivity {
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 
+		int screen_width = this.getWindowManager().getDefaultDisplay().getWidth();
+    	int screen_heght = this.getWindowManager().getDefaultDisplay().getHeight();
+    	
 		final FBReaderApp fbReader = (FBReaderApp)FBReaderApp.Instance();
 		final ZLAndroidLibrary zlibrary = (ZLAndroidLibrary)ZLibrary.Instance();
 		myFullScreenFlag =
@@ -180,7 +183,13 @@ public final class FBReader extends ZLAndroidActivity {
 		}
 		
 		fbReader.addAction(ActionCode.SHOW_DIALOG_TOC, new ShowDialogTOCAction(this, fbReader));
-		fbReader.addAction(ActionCode.SHOW_DIALOG_MENU, new ShowDialogMenuAction(this, fbReader));
+		
+		if ((screen_width == 480) && (screen_heght == 800)) {
+			fbReader.addAction(ActionCode.SHOW_DIALOG_MENU, new ShowDialogMenuActionPhone(this, fbReader));
+    	} else {
+    		fbReader.addAction(ActionCode.SHOW_DIALOG_MENU, new ShowDialogMenuAction(this, fbReader));
+    	}
+		
 		fbReader.addAction(ActionCode.ADD_BOOKMARK, new AddBookmarkAction(this, fbReader));
 		fbReader.addAction(ActionCode.SHOW_DIALOG_BOOKMARKS, new ShowDialogBookmarksAction(this, fbReader));
 	}
