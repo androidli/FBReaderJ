@@ -77,13 +77,13 @@ public final class ZLKeyBindings {
 			bindKey(KeyEvent.KEYCODE_VOLUME_UP, false, ZLApplication.NoAction);
 			bindKey(KeyEvent.KEYCODE_VOLUME_DOWN, false, ZLApplication.NoAction);
 		} else if (invertVolumeKeysOption.getValue()) {
-			bindKey(KeyEvent.KEYCODE_VOLUME_UP, false, ActionCode.VOLUME_KEY_SCROLL_FORWARD);
-			bindKey(KeyEvent.KEYCODE_VOLUME_DOWN, false, ActionCode.VOLUME_KEY_SCROLL_BACK);
+			bindKey(KeyEvent.KEYCODE_VOLUME_UP, false, ActionCode.VOLUME_KEY_SCROLL_BACK);
+			bindKey(KeyEvent.KEYCODE_VOLUME_DOWN, false, ActionCode.VOLUME_KEY_SCROLL_FORWARD);
 		}
 		
 		// added by joy@onyx
-		bindKey(KeyEvent.KEYCODE_PAGE_UP, false, ActionCode.VOLUME_KEY_SCROLL_FORWARD);
-		bindKey(KeyEvent.KEYCODE_PAGE_DOWN, false, ActionCode.VOLUME_KEY_SCROLL_BACK);
+		bindKey(KeyEvent.KEYCODE_PAGE_UP, false, ActionCode.VOLUME_KEY_SCROLL_BACK);
+		bindKey(KeyEvent.KEYCODE_PAGE_DOWN, false, ActionCode.VOLUME_KEY_SCROLL_FORWARD);
 		
 		volumeKeysOption.setValue(true);
 		invertVolumeKeysOption.setValue(false);
