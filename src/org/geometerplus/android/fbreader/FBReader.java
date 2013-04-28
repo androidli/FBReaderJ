@@ -57,6 +57,7 @@ import android.view.WindowManager;
 import android.widget.RelativeLayout;
 
 import com.onyx.android.sdk.ui.SelectionPopupMenu;
+import com.onyx.android.sdk.ui.dialog.DialogSearchView;
 
 public final class FBReader extends ZLAndroidActivity {
 	public static final String BOOK_PATH_KEY = "BookPath";
@@ -74,6 +75,7 @@ public final class FBReader extends ZLAndroidActivity {
 	private static final String PLUGIN_ACTION_PREFIX = "___";
 	private final List<PluginApi.ActionInfo> myPluginActions =
 		new LinkedList<PluginApi.ActionInfo>();
+	DialogSearchView mDialogSearchView = null;
 	private final BroadcastReceiver myPluginInfoReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -219,7 +221,16 @@ public final class FBReader extends ZLAndroidActivity {
 					if (fbReader.getTextView().search(pattern, true, false, false, false) != 0) {
 						runOnUiThread(new Runnable() {
 							public void run() {
-								fbReader.showPopup(popup.getId());
+								if (mDialogSearchView != null) {
+	                                if (!mDialogSearchView.isShowing()) {
+	                                    mDialogSearchView.show();
+	                                }
+	                            }
+
+	                            SearchMenuHandler handler = new SearchMenuHandler(FBReader.this);
+	                            mDialogSearchView = new DialogSearchView(FBReader.this, handler);
+	                            mDialogSearchView.show();
+							
 							}
 						});
 					} else {
@@ -407,20 +418,7 @@ public final class FBReader extends ZLAndroidActivity {
 
 	@Override
 	public boolean onSearchRequested() {
-		final FBReaderApp fbreader = (FBReaderApp)FBReaderApp.Instance();
-		final FBReaderApp.PopupPanel popup = fbreader.getActivePopup();
-		fbreader.hideActivePopup();
-		final SearchManager manager = (SearchManager)getSystemService(SEARCH_SERVICE);
-		manager.setOnCancelListener(new SearchManager.OnCancelListener() {
-			public void onCancel() {
-				if (popup != null) {
-					fbreader.showPopup(popup.getId());
-				}
-				manager.setOnCancelListener(null);
-			}
-		});
-		startSearch(fbreader.TextSearchPatternOption.getValue(), true, null, false);
-		return true;
+		return super.onSearchRequested();
 	}
 
 	private SelectionPopupMenu mSelectionPopupMenu = null;
