@@ -45,9 +45,10 @@ import com.onyx.android.sdk.ui.dialog.DialogFontFaceSettings;
 import com.onyx.android.sdk.ui.dialog.DialogFontFaceSettings.onSettingsFontFaceListener;
 import com.onyx.android.sdk.ui.dialog.DialogGotoPage;
 import com.onyx.android.sdk.ui.dialog.DialogGotoPage.AcceptNumberListener;
+import com.onyx.android.sdk.ui.dialog.DialogReaderMenu;
+import com.onyx.android.sdk.ui.dialog.DialogReaderMenu.FontSizeProperty;
+import com.onyx.android.sdk.ui.dialog.DialogReaderMenu.LineSpacingProperty;
 import com.onyx.android.sdk.ui.dialog.DialogReaderMenuPhone;
-import com.onyx.android.sdk.ui.dialog.DialogReaderMenuPhone.FontSizeProperty;
-import com.onyx.android.sdk.ui.dialog.DialogReaderMenuPhone.LineSpacingProperty;
 import com.onyx.android.sdk.ui.dialog.DialogScreenRefresh;
 import com.onyx.android.sdk.ui.dialog.DialogScreenRefresh.onScreenRefreshListener;
 /**
@@ -83,7 +84,7 @@ public class ShowDialogMenuActionPhone extends FBAndroidAction
         final ZLTextStyleCollection collection = ZLTextStyleCollection.Instance();
         mBaseStyle = collection.getBaseStyle();
 
-        DialogReaderMenuPhone.IMenuHandler menu_handler = new DialogReaderMenuPhone.IMenuHandler()
+        DialogReaderMenu.IReaderMenuHandler menu_handler = new DialogReaderMenu.IReaderMenuHandler()
         {
 
             @Override

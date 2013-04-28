@@ -83,7 +83,7 @@ public class ShowDialogMenuAction extends FBAndroidAction
         final ZLTextStyleCollection collection = ZLTextStyleCollection.Instance();
         mBaseStyle = collection.getBaseStyle();
 
-        DialogReaderMenu.IMenuHandler menu_handler = new DialogReaderMenu.IMenuHandler()
+        DialogReaderMenu.IReaderMenuHandler menu_handler = new DialogReaderMenu.IReaderMenuHandler()
         {
 
             @Override
