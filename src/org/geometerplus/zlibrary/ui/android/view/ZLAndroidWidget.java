@@ -26,6 +26,7 @@ import org.geometerplus.fbreader.library.Library;
 import org.geometerplus.zlibrary.core.application.ZLApplication;
 import org.geometerplus.zlibrary.core.view.ZLView;
 import org.geometerplus.zlibrary.core.view.ZLViewWidget;
+import org.geometerplus.zlibrary.text.view.ZLTextPosition;
 import org.geometerplus.zlibrary.ui.android.library.ZLAndroidActivity;
 import org.geometerplus.zlibrary.ui.android.library.ZLAndroidLibrary;
 
@@ -278,18 +279,17 @@ public class ZLAndroidWidget extends View implements ZLViewWidget, View.OnLongCl
 	private int mBookmarkX = 0;
 	private void drawBookmarkIcon(Canvas canvas) {
 	    final FBReaderApp fbreader = (FBReaderApp)FBReaderApp.Instance();
+	    ZLTextPosition start_cursor = fbreader.getTextView().getStartCursor();
+		ZLTextPosition end_cursor = fbreader.getTextView().getEndCursor();
 	    if (fbreader != null && fbreader.Model != null) {
-	        final Bookmark bookmarkAdd = fbreader.addBookmark(20, true);
 	        mBookmarkBitmap = BookmarkIcon.drawTriangle(false);
 	        mBookmarkX = ZLAndroidWidget.this.getWidth() - mBookmarkBitmap.getWidth();
-	        if (bookmarkAdd != null) {
-	            for (Bookmark bookmark : Library.Instance().allBookmarks()) {
-	                if (bookmark.getText().equals(bookmarkAdd.getText())) {
-	                    mBookmarkBitmap = BookmarkIcon.drawTriangle(true);
-	                    break;
-	                }
-	            }
-	        }
+			for (Bookmark bookmark : Library.Instance().allBookmarks()) {
+				if (bookmark.compareTo(start_cursor) >= 0 && bookmark.compareTo(end_cursor) < 0) {
+					mBookmarkBitmap = BookmarkIcon.drawTriangle(true);
+					break;
+				}
+			}
 	        Paint paint = new Paint();
 	        paint.setAlpha(220);
 	        canvas.drawBitmap(mBookmarkBitmap, mBookmarkX, mBookmarkY, paint);
