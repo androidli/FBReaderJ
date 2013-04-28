@@ -279,11 +279,13 @@ public class ZLAndroidWidget extends View implements ZLViewWidget, View.OnLongCl
 	private int mBookmarkX = 0;
 	private void drawBookmarkIcon(Canvas canvas) {
 	    final FBReaderApp fbreader = (FBReaderApp)FBReaderApp.Instance();
+	    ZLTextPosition start_cursor = fbreader.getTextView().getStartCursor();
+		ZLTextPosition end_cursor = fbreader.getTextView().getEndCursor();
 	    if (fbreader != null && fbreader.Model != null) {
 	        mBookmarkBitmap = BookmarkIcon.drawTriangle(false);
 	        mBookmarkX = ZLAndroidWidget.this.getWidth() - mBookmarkBitmap.getWidth();
 			for (Bookmark bookmark : Library.Instance().allBookmarks()) {
-				if (isInCurrentScreen(bookmark)) {
+				if (bookmark.compareTo(start_cursor) >= 0 && bookmark.compareTo(end_cursor) < 0) {
 					mBookmarkBitmap = BookmarkIcon.drawTriangle(true);
 					break;
 				}
@@ -294,31 +296,6 @@ public class ZLAndroidWidget extends View implements ZLViewWidget, View.OnLongCl
 	    }
 	}
 
-	private boolean isInCurrentScreen(Bookmark bookmark) {
-		FBReaderApp fbreader = (FBReaderApp)FBReaderApp.Instance();
-		ZLTextPosition start_cursor = fbreader.getTextView().getStartCursor();
-		ZLTextPosition end_cursor = fbreader.getTextView().getEndCursor();
-		if (bookmark.getParagraphIndex() > start_cursor.getParagraphIndex() && bookmark.getParagraphIndex() < end_cursor.getParagraphIndex()) {
-			return true;
-		} else if (bookmark.getParagraphIndex() == start_cursor.getParagraphIndex() || bookmark.getParagraphIndex() == end_cursor.getParagraphIndex()) {
-			if (bookmark.getParagraphIndex() == start_cursor.getParagraphIndex()) {
-				if (bookmark.getElementIndex() >= start_cursor.getElementIndex()) {
-					return true;
-				} else {
-					return false;
-				}
-			} else if (bookmark.getParagraphIndex() == end_cursor.getParagraphIndex()) {
-				if (bookmark.getElementIndex() < end_cursor.getElementIndex()) {
-					return true;
-				} else {
-					return false;
-				}
-			}
-			return true;
-		}
-		return false;
-	}
-	
 	private int mPageRenderCount = 0;
 	private ZLAndroidLibrary mZlibrary = (ZLAndroidLibrary)ZLAndroidLibrary.Instance();
 	private void epdInvalidateHelper()
