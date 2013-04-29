@@ -503,6 +503,14 @@ public class ZLAndroidWidget extends View implements ZLViewWidget, View.OnLongCl
 			ZLApplication.Instance().runAction(ActionCode.DECREASE_FONT);
 			return true;
 		}
+		else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+		    ZLApplication.Instance().runAction(ActionCode.VOLUME_KEY_SCROLL_BACK);
+		    return true;
+		}
+		else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+		    ZLApplication.Instance().runAction(ActionCode.VOLUME_KEY_SCROLL_FORWARD);
+		    return true;
+		}
 		if (application.hasActionForKey(keyCode, true) ||
 			application.hasActionForKey(keyCode, false)) {
 			if (myKeyUnderTracking != -1) {
