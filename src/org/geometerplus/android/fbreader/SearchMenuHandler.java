@@ -15,12 +15,12 @@ public class SearchMenuHandler implements IHandler {
 	
 	@Override
 	public void searchForward() {
-		FBReaderApp.Instance().runAction(ActionCode.FIND_PREVIOUS);
+		FBReaderApp.Instance().runAction(ActionCode.FIND_NEXT);
 	}
 
 	@Override
 	public void searchBackward() {
-		FBReaderApp.Instance().runAction(ActionCode.FIND_NEXT);
+		FBReaderApp.Instance().runAction(ActionCode.FIND_PREVIOUS);
 	}
 
 	@Override
