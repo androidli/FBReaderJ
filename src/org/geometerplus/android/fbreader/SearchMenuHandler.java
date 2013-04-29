@@ -26,7 +26,7 @@ public class SearchMenuHandler implements IHandler {
 	@Override
 	public void dismissdialog() {
 		FBReaderApp.Instance().runAction(ActionCode.CLEAR_FIND_RESULTS);
-		mFbReader.mDialogSearchView.dismiss();
+		mFbReader.getDialogSearchView().dismiss();
 	}
 
 	@Override

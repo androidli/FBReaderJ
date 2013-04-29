@@ -75,7 +75,7 @@ public final class FBReader extends ZLAndroidActivity {
 	private static final String PLUGIN_ACTION_PREFIX = "___";
 	private final List<PluginApi.ActionInfo> myPluginActions =
 		new LinkedList<PluginApi.ActionInfo>();
-	DialogSearchView mDialogSearchView = null;
+	private DialogSearchView mDialogSearchView = null;
 	private final BroadcastReceiver myPluginInfoReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -457,6 +457,11 @@ public final class FBReader extends ZLAndroidActivity {
 	public SelectionPopupMenu getSelectionPopupMenu()
 	{
 	    return mSelectionPopupMenu;
+	}
+	
+	public DialogSearchView getDialogSearchView()
+	{
+	    return mDialogSearchView;
 	}
 
 	private void onPreferencesUpdate(int resultCode) {
