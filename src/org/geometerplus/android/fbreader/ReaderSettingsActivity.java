@@ -33,7 +33,7 @@ public class ReaderSettingsActivity extends PreferenceActivity
         list.setEntries(sPageMarginsArray);
         list.setEntryValues(sPageMarginsArray);
 
-        mDicts = OnyxSysCenter.getDictionaryList();
+        mDicts = OnyxSysCenter.getAvailableDictionaryList(this);
         mDictEntries = new String[mDicts.length];
         mDictEntryValues = new String[mDicts.length];
         for (int i = 0; i < mDictEntries.length; i++) {
