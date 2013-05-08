@@ -413,6 +413,12 @@ public class ShowDialogMenuAction extends FBAndroidAction
             {
                 return false;
             }
+            
+            @Override
+            public boolean showSpacingSettings()
+            {
+                return true;
+            }
 
             @Override
             public boolean isFullscreen()
