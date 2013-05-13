@@ -48,7 +48,9 @@ public class ReaderSettingsActivity extends PreferenceActivity
     @Override
     protected void onResume() {
     	super.onResume();
-    	mDictList.setValueIndex(getValueIndex(OnyxSysCenter.getDictionary().packageName));
+    	if (mDictEntries.length > 0) {
+    		mDictList.setValueIndex(getValueIndex(OnyxSysCenter.getDictionary().packageName));
+    	}
     }
     
     @Override

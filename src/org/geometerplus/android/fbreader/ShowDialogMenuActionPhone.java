@@ -39,8 +39,9 @@ import android.widget.LinearLayout;
 import com.onyx.android.sdk.tts.OnyxTtsSpeaker;
 import com.onyx.android.sdk.ui.data.DirectoryItem;
 import com.onyx.android.sdk.ui.dialog.AnnotationItem;
+import com.onyx.android.sdk.ui.dialog.DialogDirectory;
+import com.onyx.android.sdk.ui.dialog.DialogDirectory.DirectoryTab;
 import com.onyx.android.sdk.ui.dialog.DialogDirectoryPhone;
-import com.onyx.android.sdk.ui.dialog.DialogDirectoryPhone.DirectoryTab;
 import com.onyx.android.sdk.ui.dialog.DialogFontFaceSettings;
 import com.onyx.android.sdk.ui.dialog.DialogFontFaceSettings.onSettingsFontFaceListener;
 import com.onyx.android.sdk.ui.dialog.DialogGotoPage;
@@ -580,7 +581,7 @@ public class ShowDialogMenuActionPhone extends FBAndroidAction
 
         ArrayList<AnnotationItem> annotationItems = new ArrayList<AnnotationItem>();
 
-        DialogDirectoryPhone.IGotoPageHandler gotoPageHandler = new DialogDirectoryPhone.IGotoPageHandler()
+        DialogDirectory.IGotoPageHandler gotoPageHandler = new DialogDirectory.IGotoPageHandler()
         {
 
             @Override
