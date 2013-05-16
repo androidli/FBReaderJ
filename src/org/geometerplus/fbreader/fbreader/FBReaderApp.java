@@ -44,6 +44,11 @@ import org.geometerplus.zlibrary.text.hyphenation.ZLTextHyphenator;
 import org.geometerplus.zlibrary.text.view.ZLTextFixedPosition;
 import org.geometerplus.zlibrary.text.view.ZLTextPosition;
 import org.geometerplus.zlibrary.text.view.ZLTextWordCursor;
+import org.geometerplus.zlibrary.ui.android.library.ZLAndroidLibrary;
+
+import android.app.Activity;
+import android.content.Context;
+import android.os.PowerManager;
 
 import com.onyx.android.sdk.ui.dialog.DialogPageMargins;
 import com.onyx.android.sdk.ui.dialog.DialogReaderSettings;
@@ -273,7 +278,19 @@ public final class FBReaderApp extends ZLApplication {
 			Model = null;
 			System.gc();
 			System.gc();
-			try {
+			
+			PowerManager.WakeLock wake_lock = null;
+	        try {
+	            Activity activity = ((ZLAndroidLibrary)ZLAndroidLibrary.Instance()).getActivity();
+	            if (activity != null) {
+                    PowerManager pm = (PowerManager)activity.getSystemService(Context.POWER_SERVICE);
+                    wake_lock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "BookModel");
+                    wake_lock.acquire();
+	            }
+	            else {
+	                assert(false);
+	            }
+	            
 				Model = BookModel.createModel(book);
 				ZLTextHyphenator.Instance().load(book.getLanguage());
 				BookTextView.setModel(Model.getTextModel());
@@ -297,7 +314,11 @@ public final class FBReaderApp extends ZLApplication {
 				setTitle(title.toString());
 			} catch (BookReadingException e) {
 				processException(e);
-			}
+			} finally {
+                if (wake_lock != null) {
+                    wake_lock.release();
+                }
+            }
 		}
 		getViewWidget().reset();
 		getViewWidget().repaint();
