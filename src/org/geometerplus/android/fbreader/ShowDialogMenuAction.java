@@ -62,9 +62,9 @@ public class ShowDialogMenuAction extends FBAndroidAction
 
     private static DialogReaderMenu sDialogReaderMenu;
     private static OnyxTtsSpeaker sTtsSpeaker = null;
-    
+
     private FBReader mFbReader = null;
-    
+
     private int myParagraphIndex = -1;
     private int myParagraphsNumber = 0;
 
@@ -188,7 +188,7 @@ public class ShowDialogMenuAction extends FBAndroidAction
             {
                 ZLApplication.Instance().runAction(ActionCode.DICTIONARY);
             }
-            
+
             @Override
             public void searchContent()
             {
@@ -413,7 +413,7 @@ public class ShowDialogMenuAction extends FBAndroidAction
             {
                 return false;
             }
-            
+
             @Override
             public boolean showSpacingSettings()
             {
@@ -449,14 +449,14 @@ public class ShowDialogMenuAction extends FBAndroidAction
             	 Intent intent = new Intent(mFbReader, ReaderSettingsActivity.class);
             	 mFbReader.startActivity(intent);
             }
-            
+
             @Override
             public boolean ttsIsSpeaking()
             {
                 if (sTtsSpeaker == null) {
                     return false;
                 }
-                
+
                 return sTtsSpeaker.isActive() && !sTtsSpeaker.isPaused();
             }
 
@@ -466,7 +466,7 @@ public class ShowDialogMenuAction extends FBAndroidAction
                     sTtsSpeaker = new OnyxTtsSpeaker(mFbReader);
                     sTtsSpeaker.setOnSpeakerCompletionListener(new OnyxTtsSpeaker.OnSpeakerCompletionListener()
                     {
-                        
+
                         @Override
                         public void onSpeakerCompletion()
                         {
@@ -482,17 +482,17 @@ public class ShowDialogMenuAction extends FBAndroidAction
                         }
                     });
                 }
-                
+
 
             }
 
             @Override
             public void ttsSpeak() {
                 assert(sTtsSpeaker != null);
-                
+
                 if (sTtsSpeaker.isPaused()) {
                     sTtsSpeaker.resume();
-                } 
+                }
                 else {
                     sTtsSpeaker.stop();
 
@@ -505,14 +505,14 @@ public class ShowDialogMenuAction extends FBAndroidAction
             @Override
             public void ttsPause() {
                 assert(sTtsSpeaker != null);
-                
+
                 sTtsSpeaker.pause();
             }
 
             @Override
             public void ttsStop() {
                 assert(sTtsSpeaker != null);
-                
+
                 sTtsSpeaker.stop();
                 clearHighlighting();
             }
@@ -534,7 +534,7 @@ public class ShowDialogMenuAction extends FBAndroidAction
             sDialogReaderMenu.setPageCount(total);
         }
     }
-    
+
     /**
      * TODO ugly hacking for stop TTS
      */
@@ -617,7 +617,30 @@ public class ShowDialogMenuAction extends FBAndroidAction
             }
         };
 
-        DialogDirectory dialogDirectory = new DialogDirectory(BaseActivity, TOCItems, bookmarks, annotationItems, gotoPageHandler, tab);
+        DialogDirectory.IEditPageHandler editPageHandler = new DialogDirectory.IEditPageHandler()
+        {
+
+            @Override
+            public void editAnnotation(DirectoryItem item)
+            {
+
+            }
+
+            @Override
+            public void deleteBookmark(DirectoryItem item)
+            {
+                Bookmark bookmark = (Bookmark) item.getTag();
+                bookmark.delete();
+            }
+
+            @Override
+            public void deleteAnnotation(DirectoryItem item)
+            {
+
+            }
+        };
+
+        DialogDirectory dialogDirectory = new DialogDirectory(BaseActivity, TOCItems, bookmarks, annotationItems, gotoPageHandler, editPageHandler, tab);
         dialogDirectory.show();
     }
 
@@ -628,18 +651,18 @@ public class ShowDialogMenuAction extends FBAndroidAction
             position.CharIndex
         );
     }
-    
+
     public void highlightArea(TextPosition start, TextPosition end) {
         this.Reader.getTextView().highlight(
             getZLTextPosition(start),
             getZLTextPosition(end)
         );
     }
-    
+
     public void clearHighlighting() {
         this.Reader.getTextView().clearHighlighting();
     }
-    
+
     public void highlightParagraph() throws ApiException {
         if (0 <= myParagraphIndex && myParagraphIndex < myParagraphsNumber) {
             highlightArea(
@@ -650,7 +673,7 @@ public class ShowDialogMenuAction extends FBAndroidAction
             clearHighlighting();
         }
     }
-    
+
     public String getParagraphText(int paragraphIndex) {
         final StringBuffer sb = new StringBuffer();
         final ZLTextWordCursor cursor = new ZLTextWordCursor(this.Reader.getTextView().getStartCursor());
@@ -665,18 +688,18 @@ public class ShowDialogMenuAction extends FBAndroidAction
         }
         return sb.toString();
     }
-    
+
     public boolean isPageEndOfText() {
         final ZLTextWordCursor cursor = this.Reader.getTextView().getEndCursor();
         return cursor.isEndOfParagraph() && cursor.getParagraphCursor().isLast();
     }
-    
+
     public void setPageStart(TextPosition position) {
         this.Reader.getTextView().gotoPosition(position.ParagraphIndex, position.ElementIndex, position.CharIndex);
         this.Reader.getViewWidget().repaint();
         this.Reader.storePosition();
     }
-    
+
     public String gotoNextParagraph() {
         String text = "";
         for (; myParagraphIndex < myParagraphsNumber; ++myParagraphIndex) {
