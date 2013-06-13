@@ -38,7 +38,6 @@ import android.widget.LinearLayout;
 
 import com.onyx.android.sdk.tts.OnyxTtsSpeaker;
 import com.onyx.android.sdk.ui.data.DirectoryItem;
-import com.onyx.android.sdk.ui.dialog.AnnotationItem;
 import com.onyx.android.sdk.ui.dialog.DialogDirectory;
 import com.onyx.android.sdk.ui.dialog.DialogDirectory.DirectoryTab;
 import com.onyx.android.sdk.ui.dialog.DialogFontFaceSettings;
@@ -46,10 +45,10 @@ import com.onyx.android.sdk.ui.dialog.DialogFontFaceSettings.onSettingsFontFaceL
 import com.onyx.android.sdk.ui.dialog.DialogGotoPage;
 import com.onyx.android.sdk.ui.dialog.DialogGotoPage.AcceptNumberListener;
 import com.onyx.android.sdk.ui.dialog.DialogReaderMenu;
-import com.onyx.android.sdk.ui.dialog.DialogReaderMenu.FontSizeProperty;
-import com.onyx.android.sdk.ui.dialog.DialogReaderMenu.LineSpacingProperty;
 import com.onyx.android.sdk.ui.dialog.DialogScreenRefresh;
 import com.onyx.android.sdk.ui.dialog.DialogScreenRefresh.onScreenRefreshListener;
+import com.onyx.android.sdk.ui.dialog.data.AnnotationItem;
+import com.onyx.android.sdk.ui.dialog.data.IReaderMenuHandler;
 /**
  * @author dxwts
  *
@@ -83,7 +82,7 @@ public class ShowDialogMenuAction extends FBAndroidAction
         final ZLTextStyleCollection collection = ZLTextStyleCollection.Instance();
         mBaseStyle = collection.getBaseStyle();
 
-        DialogReaderMenu.IReaderMenuHandler menu_handler = new DialogReaderMenu.IReaderMenuHandler()
+        IReaderMenuHandler menu_handler = new IReaderMenuHandler()
         {
 
             @Override
