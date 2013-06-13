@@ -43,6 +43,7 @@ import android.view.ViewConfiguration;
 
 import com.onyx.android.sdk.device.EpdController;
 import com.onyx.android.sdk.device.EpdController.UpdateMode;
+import com.onyx.android.sdk.ui.dialog.DialogScreenRefresh;
 import com.onyx.android.sdk.ui.util.BookmarkIcon;
 
 public class ZLAndroidWidget extends View implements ZLViewWidget, View.OnLongClickListener {
@@ -301,7 +302,7 @@ public class ZLAndroidWidget extends View implements ZLViewWidget, View.OnLongCl
 	private void epdInvalidateHelper()
 	{
 	    mPageRenderCount++;
-	    if (mPageRenderCount >= mZlibrary.ScreenRefreshOption.getValue()) {
+	    if (mPageRenderCount >= DialogScreenRefresh.RENDER_RESET_MAX_TIME) {
 	        EpdController.invalidate(this, UpdateMode.GC);
 	        mPageRenderCount = 0;
 	    }
