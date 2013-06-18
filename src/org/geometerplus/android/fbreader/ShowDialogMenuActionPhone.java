@@ -50,8 +50,6 @@ import com.onyx.android.sdk.ui.dialog.DialogScreenRefresh;
 import com.onyx.android.sdk.ui.dialog.DialogScreenRefresh.onScreenRefreshListener;
 import com.onyx.android.sdk.ui.dialog.data.AnnotationItem;
 import com.onyx.android.sdk.ui.dialog.data.IReaderMenuHandler;
-import com.onyx.android.sdk.ui.dialog.data.IReaderMenuHandler.FontSizeProperty;
-import com.onyx.android.sdk.ui.dialog.data.IReaderMenuHandler.LineSpacingProperty;
 /**
  * @author dxwts
  *
@@ -197,6 +195,12 @@ public class ShowDialogMenuActionPhone extends FBAndroidAction
 //                ZLApplication.Instance().doAction(ActionCode.SEARCH);
                 ZLApplication.Instance().runAction(ActionCode.SEARCH);
             }
+            
+            @Override
+			public void searchContent(String query) 
+            {
+				ZLApplication.Instance().runAction(ActionCode.SEARCH , query);	
+			}
 
             @Override
             public void rotationScreen(int i)

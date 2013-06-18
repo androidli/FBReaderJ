@@ -57,7 +57,6 @@ public class ReaderSettingsActivity extends PreferenceActivity
     protected void onStop() {
     	super.onStop();
     	ListPreference dictList = (ListPreference) findPreference(sDictionaryList);
-    	System.out.println(dictList.getValue());
     	if (dictList.getValue() != null) {
     		OnyxSysCenter.setDictionary(this, OnyxDictionaryInfo.findDict(mDictEntries[getValueIndex(dictList.getValue())]));
         }

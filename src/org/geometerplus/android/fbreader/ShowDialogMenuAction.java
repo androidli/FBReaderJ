@@ -520,6 +520,12 @@ public class ShowDialogMenuAction extends FBAndroidAction
             public boolean canChangeFontFace() {
             	return true;
             }
+
+			@Override
+			public void searchContent(String query) {
+				// TODO Auto-generated method stub
+				
+			}
         };
 
         sDialogReaderMenu = new DialogReaderMenu(BaseActivity, menu_handler);
