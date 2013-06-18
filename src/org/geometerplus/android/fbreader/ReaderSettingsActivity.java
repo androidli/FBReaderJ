@@ -1,5 +1,6 @@
 package org.geometerplus.android.fbreader;
 
+import org.geometerplus.fbreader.fbreader.FBReaderApp;
 import org.geometerplus.zlibrary.ui.android.R;
 
 import android.os.Bundle;
@@ -22,6 +23,7 @@ public class ReaderSettingsActivity extends PreferenceActivity
     private String[] mDictEntries = null;
     private String[] mDictEntryValues = null;
     private ListPreference mDictList = null;
+    private ListPreference mList = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -29,9 +31,9 @@ public class ReaderSettingsActivity extends PreferenceActivity
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.settings_activity);
 
-        ListPreference list = (ListPreference) findPreference(sPageMargin);
-        list.setEntries(sPageMarginsArray);
-        list.setEntryValues(sPageMarginsArray);
+        mList = (ListPreference) findPreference(sPageMargin);
+        mList.setEntries(sPageMarginsArray);
+        mList.setEntryValues(sPageMarginsArray);
 
         mDicts = OnyxSysCenter.getAvailableDictionaryList(this);
         mDictEntries = new String[mDicts.length];
@@ -60,6 +62,8 @@ public class ReaderSettingsActivity extends PreferenceActivity
     	if (dictList.getValue() != null) {
     		OnyxSysCenter.setDictionary(this, OnyxDictionaryInfo.findDict(mDictEntries[getValueIndex(dictList.getValue())]));
         }
+    	
+    	setPageMarign();
     }
     
 	private int getValueIndex(String value) {
@@ -75,5 +79,13 @@ public class ReaderSettingsActivity extends PreferenceActivity
     public static void setDictValue(String value)
     {
         sDictValue = value;
+    }
+    
+    private void setPageMarign() {
+        final FBReaderApp fbReader = (FBReaderApp)FBReaderApp.Instance();
+        String margin = mList.getValue();
+        fbReader.setAllFrameMarginsOptionValue(Integer.parseInt(margin));
+        fbReader.clearTextCaches();
+        fbReader.getViewWidget().repaint();
     }
 }
