@@ -22,8 +22,10 @@ package org.geometerplus.android.fbreader;
 import org.geometerplus.fbreader.fbreader.FBReaderApp;
 
 class SearchAction extends FBAndroidAction {
+	private FBReader mFBReader = null;
 	SearchAction(FBReader baseActivity, FBReaderApp fbreader) {
 		super(baseActivity, fbreader);
+		mFBReader = baseActivity;
 	}
 
 	@Override
@@ -33,6 +35,9 @@ class SearchAction extends FBAndroidAction {
 
 	@Override
 	protected void run(Object ... params) {
-		BaseActivity.onSearchRequested();
+//		BaseActivity.onSearchRequested();
+		
+		String query = params[0].toString();
+		mFBReader.doSearch(query);
 	}
 }

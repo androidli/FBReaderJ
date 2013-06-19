@@ -71,6 +71,7 @@ public final class FBReader extends ZLAndroidActivity {
 	public static final int RESULT_RELOAD_BOOK = RESULT_FIRST_USER + 2;
 	
 	private int myFullScreenFlag;
+	private FBReaderApp fbReader = null;
 
 	private static final String PLUGIN_ACTION_PREFIX = "___";
 	private final List<PluginApi.ActionInfo> myPluginActions =
@@ -205,7 +206,7 @@ public final class FBReader extends ZLAndroidActivity {
 	@Override
 	protected void onNewIntent(Intent intent) {
 		final Uri data = intent.getData();
-		final FBReaderApp fbReader = (FBReaderApp)FBReaderApp.Instance();
+		fbReader = (FBReaderApp)FBReaderApp.Instance();
 		if ((intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0) {
 			super.onNewIntent(intent);
 		} else if (Intent.ACTION_VIEW.equals(intent.getAction())
@@ -213,40 +214,45 @@ public final class FBReader extends ZLAndroidActivity {
 			fbReader.runAction(data.getEncodedSchemeSpecificPart(), data.getFragment());
 		} else if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
 			final String pattern = intent.getStringExtra(SearchManager.QUERY);
-			final Runnable runnable = new Runnable() {
-				public void run() {
-					final TextSearchPopup popup = (TextSearchPopup)fbReader.getPopupById(TextSearchPopup.ID);
-					popup.initPosition();
-					fbReader.TextSearchPatternOption.setValue(pattern);
-					if (fbReader.getTextView().search(pattern, true, false, false, false) != 0) {
-						runOnUiThread(new Runnable() {
-							public void run() {
-								if (mDialogSearchView != null) {
-	                                if (!mDialogSearchView.isShowing()) {
-	                                    mDialogSearchView.show();
-	                                }
-	                            }
-
-	                            SearchMenuHandler handler = new SearchMenuHandler(FBReader.this);
-	                            mDialogSearchView = new DialogSearchView(FBReader.this, handler);
-	                            mDialogSearchView.show();
-							
-							}
-						});
-					} else {
-						runOnUiThread(new Runnable() {
-							public void run() {
-								UIUtil.showErrorMessage(FBReader.this, "textNotFound");
-								popup.StartPosition = null;
-							}
-						});
-					}
-				}
-			};
-			UIUtil.wait("search", runnable, this);
+			doSearch(pattern);
 		} else {
 			super.onNewIntent(intent);
 		}
+	}
+
+	void doSearch(final String pattern) {
+		fbReader = (FBReaderApp)FBReaderApp.Instance();
+		final Runnable runnable = new Runnable() {
+			public void run() {
+				final TextSearchPopup popup = (TextSearchPopup)fbReader.getPopupById(TextSearchPopup.ID);
+				popup.initPosition();
+				fbReader.TextSearchPatternOption.setValue(pattern);
+				if (fbReader.getTextView().search(pattern, true, false, false, false) != 0) {
+					runOnUiThread(new Runnable() {
+						public void run() {
+							if (mDialogSearchView != null) {
+		                        if (!mDialogSearchView.isShowing()) {
+		                            mDialogSearchView.show();
+		                        }
+		                    }
+
+		                    SearchMenuHandler handler = new SearchMenuHandler(FBReader.this);
+		                    mDialogSearchView = new DialogSearchView(FBReader.this, handler);
+		                    mDialogSearchView.show();
+						
+						}
+					});
+				} else {
+					runOnUiThread(new Runnable() {
+						public void run() {
+							UIUtil.showErrorMessage(FBReader.this, "textNotFound");
+							popup.StartPosition = null;
+						}
+					});
+				}
+			}
+		};
+		UIUtil.wait("search", runnable, this);
 	}
 
 	@Override
