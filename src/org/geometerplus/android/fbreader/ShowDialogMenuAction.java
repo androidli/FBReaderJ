@@ -584,6 +584,15 @@ public class ShowDialogMenuAction extends FBAndroidAction
         }
     }
 
+    public static boolean ttsIsSpeaking()
+    {
+        if (sTtsSpeaker == null) {
+            return false;
+        }
+
+        return sTtsSpeaker.isActive() && !sTtsSpeaker.isPaused();
+    }
+
     private void showDirectoryDialog(DirectoryTab tab)
     {
         final FBReaderApp fbreader = (FBReaderApp)FBReaderApp.Instance();
