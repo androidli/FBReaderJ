@@ -19,6 +19,8 @@
 
 package org.geometerplus.zlibrary.ui.android.view;
 
+
+import org.geometerplus.android.fbreader.ShowDialogMenuAction;
 import org.geometerplus.fbreader.fbreader.ActionCode;
 import org.geometerplus.fbreader.fbreader.FBReaderApp;
 import org.geometerplus.fbreader.library.Bookmark;
@@ -552,6 +554,15 @@ public class ZLAndroidWidget extends View implements ZLViewWidget, View.OnLongCl
 		        ZLApplication.Instance().runAction(ActionCode.ADD_BOOKMARK);
 		        ZLAndroidWidget.this.invalidate();
 		}
+        else if (keyCode == KeyEvent.KEYCODE_BACK) {
+            FBReaderApp fbreader = (FBReaderApp) FBReaderApp.Instance();
+            if (ShowDialogMenuAction.ttsIsSpeaking())
+            {
+                ShowDialogMenuAction.shutdownTts();
+                fbreader.getTextView().clearHighlighting();
+                return true;
+            }
+        }
 		
 		if (myKeyUnderTracking != -1) {
 			if (myKeyUnderTracking == keyCode) {
