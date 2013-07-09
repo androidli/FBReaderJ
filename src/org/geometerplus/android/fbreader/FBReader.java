@@ -533,6 +533,10 @@ public final class FBReader extends ZLAndroidActivity {
 		application.myMainWindow.addMenuItem(menu, actionId, null, null);
 	}
 
+	public ZLAndroidLibrary getALAndroidLibary() {
+	    return (ZLAndroidLibrary) ZLibrary.Instance();
+	}
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);

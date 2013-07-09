@@ -55,6 +55,15 @@ public class ZLAndroidWidget extends View implements ZLViewWidget, View.OnLongCl
 
 	private Bitmap mBookmarkBitmap;
 	
+	private ITTSControl mITTSWorkListener = new ITTSControl()
+    {
+        @Override
+        public void changeReadingPage()
+        {
+            //to do nothing
+        }
+    };
+
 	public ZLAndroidWidget(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		init();
@@ -552,7 +561,16 @@ public class ZLAndroidWidget extends View implements ZLViewWidget, View.OnLongCl
 		        ZLApplication.Instance().runAction(ActionCode.ADD_BOOKMARK);
 		        ZLAndroidWidget.this.invalidate();
 		}
-		
+
+		if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+	        mITTSWorkListener.changeReadingPage();
+	        return true;
+	    }
+	    if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+	        mITTSWorkListener.changeReadingPage();
+	        return true;
+	    }
+
 		if (myKeyUnderTracking != -1) {
 			if (myKeyUnderTracking == keyCode) {
 				final boolean longPress = System.currentTimeMillis() >
@@ -567,6 +585,7 @@ public class ZLAndroidWidget extends View implements ZLViewWidget, View.OnLongCl
 				application.hasActionForKey(keyCode, false) ||
 				application.hasActionForKey(keyCode, true);
 		}
+
 	}
 
 	@Override
@@ -615,5 +634,13 @@ public class ZLAndroidWidget extends View implements ZLViewWidget, View.OnLongCl
 	private int getMainAreaHeight() {
 		final ZLView.FooterArea footer = ZLApplication.Instance().getCurrentView().getFooterArea();
 		return footer != null ? getHeight() - footer.getHeight() : getHeight();
+	}
+
+	public static interface ITTSControl{
+	    public void changeReadingPage();
+	}
+
+	public void setOnTTSChangeRead(ITTSControl ttsWork) {
+	    mITTSWorkListener = ttsWork;
 	}
 }
