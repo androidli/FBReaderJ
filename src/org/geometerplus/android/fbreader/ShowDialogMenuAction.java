@@ -5,6 +5,7 @@ package org.geometerplus.android.fbreader;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.geometerplus.android.fbreader.api.ApiException;
@@ -30,9 +31,11 @@ import org.geometerplus.zlibrary.text.view.style.ZLTextBaseStyle;
 import org.geometerplus.zlibrary.text.view.style.ZLTextStyleCollection;
 import org.geometerplus.zlibrary.ui.android.library.ZLAndroidLibrary;
 import org.geometerplus.zlibrary.ui.android.view.AndroidFontUtil;
+import org.geometerplus.zlibrary.ui.android.view.ZLAndroidWidget.ITTSControl;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.util.Log;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
@@ -67,10 +70,41 @@ public class ShowDialogMenuAction extends FBAndroidAction
     private int myParagraphIndex = -1;
     private int myParagraphsNumber = 0;
 
+    private static final int MAX_SIZE_QUEUE = 40;
+
+    private Queue mSentenceQueue = new Queue();
+
+    /*
+     * @ autor cap
+     * mStartSentence : the high light start paragraph index
+     * mStratWords    : the high light start words index in the start paragraph
+     * mEndSentence   : the high light end paragraph index
+     * mEndWords      : the high light end words index in the end paragraph
+     * mPageStartElementIndex the page start words index
+     */
+
+    private int mStartSentence = 0, mStartWords = 0, mEndSentence = 0, mEndWords = 0;
+    private int mReadEndLength = -1;
+    private int mPageStartElementIndex = -1;
+
     ShowDialogMenuAction(FBReader baseActivity, FBReaderApp fbreader)
     {
         super(baseActivity, fbreader);
         mFbReader = baseActivity;
+        mFbReader.getALAndroidLibary().getWidget().setOnTTSChangeRead(new ITTSControl()
+        {
+
+            @Override
+            public void changeReadingPage()
+            {
+                if (sTtsSpeaker != null && sTtsSpeaker.isActive()){
+                    sTtsSpeaker.stop();
+                    mSentenceQueue.removeAll();
+                    prepareStartIndex();
+                    sTtsSpeaker.startTts(gotoNextSentence());
+                }
+            }
+        });
     }
 
     /* (non-Javadoc)
@@ -469,10 +503,9 @@ public class ShowDialogMenuAction extends FBAndroidAction
                         @Override
                         public void onSpeakerCompletion()
                         {
-                            ++myParagraphIndex;
                             if (sTtsSpeaker.isActive()) {
                                 if (!isPageEndOfText()) {
-                                    sTtsSpeaker.startTts(gotoNextParagraph());
+                                    sTtsSpeaker.startTts(gotoNextSentence());
                                 }
                                 else {
                                     sTtsSpeaker.stop();
@@ -495,9 +528,9 @@ public class ShowDialogMenuAction extends FBAndroidAction
                 else {
                     sTtsSpeaker.stop();
 
-                    myParagraphIndex = ShowDialogMenuAction.this.Reader.getTextView().getStartCursor().getParagraphIndex();
                     myParagraphsNumber = ShowDialogMenuAction.this.Reader.Model.getTextModel().getParagraphsNumber();
-                    sTtsSpeaker.startTts(gotoNextParagraph());
+                    prepareStartIndex();
+                    sTtsSpeaker.startTts(gotoNextSentence());
                 }
             }
 
@@ -733,5 +766,241 @@ public class ShowDialogMenuAction extends FBAndroidAction
                 e.printStackTrace();
             }
         return text;
+    }
+
+    private void prepareStartIndex() {
+        TextPosition position = getPageStartTextPosition();
+        myParagraphIndex = position.ParagraphIndex;
+        mEndSentence = position.ParagraphIndex;
+        mEndWords = position.ElementIndex;
+        mReadEndLength = -1;
+        if (mEndWords != 0) {
+            fillWordsIntoQueue();
+            myParagraphIndex ++;
+        }
+    }
+
+    private String gotoNextSentence(){
+
+        String text = "";
+        int textLength = 0;
+
+        mStartSentence = (mEndSentence == 0)? myParagraphIndex : mEndSentence;
+        mStartWords = mEndWords;
+
+        if (mSentenceQueue.size() < MAX_SIZE_QUEUE) {
+            for (; myParagraphIndex < myParagraphsNumber; ++myParagraphIndex) {
+                String s = getParagraphText(myParagraphIndex);
+                if (s.length() > 0) {
+                    String[] words = s.split(" ");
+                    mSentenceQueue.add(words);
+                    mReadEndLength = words.length;
+                    if (mSentenceQueue.size() > MAX_SIZE_QUEUE) {
+                        myParagraphIndex++;
+                        break;
+                    }
+                }
+            }
+            textLength = mSentenceQueue.getSesentenceEnd(MAX_SIZE_QUEUE - 1);
+            for (int i = 0; i < textLength; i++) {
+                text = text + mSentenceQueue.get() + " ";
+                mSentenceQueue.remove();
+            }
+            mReadEndLength = mReadEndLength - mSentenceQueue.size();
+        } else {
+            textLength = mSentenceQueue.getSesentenceEnd(MAX_SIZE_QUEUE - 1);
+            for (int i = 0; i < textLength; i++) {
+                text = text + mSentenceQueue.get() + " ";
+                mSentenceQueue.remove();
+            }
+            if (mReadEndLength != -1)
+                mReadEndLength = textLength + mReadEndLength;
+        }
+        mEndSentence = myParagraphIndex - 1;
+        if (mReadEndLength == -1) {
+            mEndWords = getEndIndex(mEndSentence, textLength, getPageStartTextPosition());
+        } else {
+            mEndWords = getEndIndex(mEndSentence, mReadEndLength, null);
+        }
+
+        if (isEndPage(new TextPosition(mStartSentence, mStartWords, 0), getPageEndTextPosition())) {
+            ZLApplication.Instance().runAction(ActionCode.VOLUME_KEY_SCROLL_FORWARD);
+        }
+        try {
+            highLightText(mStartSentence, mStartWords, mEndSentence, mEndWords);
+        } catch (ApiException e) {
+            e.printStackTrace();
+        }
+
+        return text;
+    }
+
+    private void fillWordsIntoQueue(){
+        ZLTextView view = (ZLTextView) ZLApplication.Instance().getCurrentView();
+        ZLTextWordCursor cursor = view.getStartCursor();
+        mPageStartElementIndex =cursor.getElementIndex();
+        while (!cursor.isEndOfParagraph()) {
+            ZLTextElement element = cursor.getElement();
+            if (element instanceof ZLTextWord) {
+                mSentenceQueue.add(element.toString());
+            }
+            cursor.nextWord();
+        }
+    }
+
+    //flags the end of page ,if true to jump next page
+    private boolean isEndPage(TextPosition readEndPosition, TextPosition pageEndPosition) {
+        if (readEndPosition.ParagraphIndex > pageEndPosition.ParagraphIndex) {
+            return true;
+        } else if(readEndPosition.ParagraphIndex == pageEndPosition.ParagraphIndex) {
+            if (readEndPosition.ElementIndex > pageEndPosition.ElementIndex) {
+                return true;
+            } else if (readEndPosition.ElementIndex == pageEndPosition.ElementIndex) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    //the end position in One page
+    private TextPosition getPageEndTextPosition() {
+        ZLTextView view = (ZLTextView) ZLApplication.Instance().getCurrentView();
+        ZLTextWordCursor cursor = view.getEndCursor();
+        return new TextPosition(cursor.getParagraphIndex(), cursor.getElementIndex(), cursor.getCharIndex());
+    }
+
+    //the start position in one page
+    private TextPosition getPageStartTextPosition() {
+        ZLTextView view = (ZLTextView) ZLApplication.Instance().getCurrentView();
+        ZLTextWordCursor cursor = view.getStartCursor();
+        return new TextPosition(cursor.getParagraphIndex(), cursor.getElementIndex(), cursor.getCharIndex());
+    }
+
+    //to know the elementIndex in paragraphIndex
+    private int getEndIndex(int paragraphIndex, int length, TextPosition position){
+        int readEndIndex = 0;
+        ZLTextWordCursor cursor = new ZLTextWordCursor(this.Reader.getTextView().getStartCursor());
+        cursor.moveToParagraph(paragraphIndex);
+        cursor.moveToParagraphStart();
+        if (position != null) {
+            cursor = ((ZLTextView)ZLApplication.Instance().getCurrentView()).getStartCursor();
+            cursor.moveTo(mPageStartElementIndex, 0);
+            mPageStartElementIndex = -1;
+            readEndIndex = cursor.getElementIndex();
+        }
+        for (int i = 0; i < length;) {
+            ZLTextElement element = cursor.getElement();
+            if (element instanceof ZLTextWord) {
+                readEndIndex += 1;
+                i++;
+            } else {
+                readEndIndex += 1;
+            }
+            cursor.nextWord();
+        }
+        return readEndIndex;
+    }
+
+    //chose the high light text.
+    private void highLightText(int startPargraph, int startWords, int endPargraph, int endWords) throws ApiException{
+        if (0 <= startPargraph && startPargraph < myParagraphsNumber && 0 <= endPargraph && endPargraph < myParagraphsNumber) {
+            highlightArea(
+                new TextPosition(startPargraph, startWords, 0),
+                new TextPosition(endPargraph, endWords, 0)
+            );
+        } else {
+            clearHighlighting();
+        }
+    }
+
+    class Queue {
+        /*
+         *  Temporary storage . The max size is 40
+         */
+
+        private LinkedList<String> words;
+        private LinkedList<Integer> wordsSymbol;
+
+        public Queue() {
+            words = new LinkedList<String>();
+            wordsSymbol = new LinkedList<Integer>();
+        }
+
+        public String get() {
+            if (words.size() > 0) {
+                return words.getFirst();
+            } else {
+                return null;
+            }
+        }
+
+        public boolean remove() {
+            if (words.size() > 0) {
+                words.removeFirst();
+                wordsSymbol.removeFirst();
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        public boolean removeAll() {
+            if (words.size() > 0) {
+                words.clear();
+                wordsSymbol.clear();
+                return true;
+            } else {
+                return true;
+            }
+        }
+
+        public void add(String[] str) {
+            for (int i = 0; i < str.length; i ++) {
+                words.addLast(str[i]);
+                wordsSymbol.addLast(hasSymbol(str[i]));
+            }
+        }
+
+        public void add(String str) {
+            words.addLast(str);
+            wordsSymbol.addLast(hasSymbol(str));
+        }
+
+        public int size() {
+            return words.size();
+        }
+
+        public int hasSymbol(String str) {
+            if(str.contains("."))
+                return 2;
+            if(str.contains("?"))
+                return 2;
+            if(str.contains("!"))
+                return 2;
+            if(str.contains(";"))
+                return 2;
+            if(str.contains(":"))
+                return 1;
+            if(str.contains("-"))
+                return 1;
+            if(str.contains(","))
+                return 0;
+            return -1;
+        }
+
+        public int getSesentenceEnd(int flags) {
+            int position = flags;
+            int max = wordsSymbol.get(flags);
+            for (int i = 1; i < 10; i++) {
+                if(wordsSymbol.get(flags - i) > max) {
+                    position = flags - i;
+                    max = wordsSymbol.get(flags - i);
+                }
+            }
+            return position + 1;
+        }
     }
 }
